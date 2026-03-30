@@ -6,29 +6,34 @@ Analyse du open data croisant résultats électoraux et équipements de transpor
 
 ## La question
 
-L'accès aux transports en commun dans une commune influence-t-il le taux d'abstention aux élections municipales ?
+Deux questions, mêmes données :
 
-On croise les résultats électoraux (Ministère de l'Intérieur) avec la densité d'équipements de transport de la BPE (INSEE), commune par commune, pour tester cette corrélation — et on ajoute la couleur politique pour affiner la lecture.
+1. L'accès aux transports influence-t-il le **taux d'abstention** ?
+2. L'accès aux transports influence-t-il le **bloc politique gagnant** ?
+
+Chaque commune devient un point : axe x = score transport, axe y = taux d'abstention, couleur = bloc gagnant. L'axe y répond à la première question, la couleur à la seconde.
 
 ## Visualisations
 
 1. **Carte choroplèthe** — communes colorées par taux d'abstention ou score transport. La carte raconte l'histoire géographique.
-2. **Nuage de points** — score transport (x) vs taux d'abstention (y), un point par commune, coloré par nuance politique. Le graphique prouve la corrélation.
+2. **Nuage de points** — score transport (x) vs taux d'abstention (y), un point par commune, coloré par bloc gagnant. Trois dimensions, un seul graphique : transport → abstention (axe y) et transport → couleur politique (couleur du point).
 
-> **v1** — analyse initiale, soumise au challenge. D'autres visualisations sont prévues : profil urbain/rural, démographie vs abstention, score transport vs bloc gagnant.
+> **v1** — score transport vs taux d'abstention vs bloc politique gagnant, soumis au challenge.
+> D'autres visualisations sont prévues : profil urbain/rural, démographie vs abstention.
 
 ## Schéma politique simplifié
 
-| Groupe         | Nuances                             |
+| Bloc (`bloc`)  | Exemples de nuances                 |
 | -------------- | ----------------------------------- |
-| Gauche         | UG, DVG, FG, EELV, DVE              |
-| Centre         | ENS, LREM, UDI, MoDem, DVC          |
-| Droite         | UDR, DVD, LR                        |
-| Extrême droite | RN, UXD, REC                        |
-| Divers / local | DIV, LDIV                           |
+| Extrême gauche | LEXG, LFI                           |
+| Gauche         | LCOM, LSOC, LVEC, LUG, LDVG         |
+| Centre         | LREN, LMDM, LHOR, LUC, LDVC, LUDI   |
+| Droite         | LLR, LUD, LDVD, LDSV                |
+| Extrême droite | LUDR, LRN, LREC, LUXD, LEXD         |
+| Divers / local | LDIV, LECO, LREG                    |
 | Abstention     | dérivé des données de participation |
 
-> Les codes de nuance politique (UG, DVG, RN, etc.) sont ceux du Ministère de l'Intérieur, utilisés dans les données officielles des élections. Ce schéma regroupe ces codes en 5 blocs + abstention pour faciliter la lecture visuelle.
+> Les codes de nuance politique sont ceux du Ministère de l'Intérieur. La colonne `bloc` dans les données officielles regroupe déjà ces codes — ce schéma l'utilise directement, sans remapping manuel.
 
 ## Données
 
@@ -51,13 +56,19 @@ On croise les résultats électoraux (Ministère de l'Intérieur) avec la densit
 ## Lancer l'analyse
 
 ```bash
-pip install pandas plotly jupyter
+# with uv (recommandé)
+uv sync
+uv run jupyter notebook notebooks/
+
+# ou pip
+pip install pandas plotly jupyter pyarrow
 jupyter notebook notebooks/
 ```
 
 ## Résultats
 
 Viz sera déployée sur [shahfazal.com/elections-municipale-2026](https://shahfazal.com/elections-municipale-2026)
+
 Réutilisation soumise sur data.gouv.fr
 
 ---

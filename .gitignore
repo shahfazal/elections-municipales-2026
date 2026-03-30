@@ -1,1 +1,21 @@
+# uv init artifact
+main.py
+
+# Data
 data/raw/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.egg-info/
+.env
+.venv/
+venv/
+
+# Jupyter
+.jupyter/

@@ -7,30 +7,34 @@ Deadline: **April 13, 2026** · Keyword: `defi-municipales-2026-résultats`
 
 ## The question
 
-Does public transport access in a commune influence voter abstention in municipal elections?
+Two questions, same data:
 
-We cross-reference electoral results (Ministère de l'Intérieur) with transport equipment density from the BPE (INSEE), at commune level, to test this correlation — and layer in political nuance to deepen the reading.
+1. Does public transport access correlate with **abstention rate**?
+2. Does public transport access correlate with **which political bloc won**?
+
+Each commune becomes a dot: x = transport score, y = abstention rate, colour = winning bloc. The y-axis answers question 1, the colour answers question 2.
 
 ## Visualisations
 
 1. **Choropleth map** — communes coloured by abstention rate or transport score. The geographic story.
-2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by political bloc. The correlation, directly.
+2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by winning bloc. Three dimensions, one chart: transport → abstention (y-axis) and transport → political colour (dot colour).
 
-> **v1** — initial analysis, submitted for the challenge.
-> Further visualisations planned: urban/rural profile, demographics vs abstention, transport score vs winning bloc.
+> **v1** — transport score vs abstention rate vs winning political bloc, submitted for the challenge.
+> Further visualisations planned: urban/rural profile, demographics vs abstention.
 
 ## Simplified political schema
 
-| Group          | Nuances included                |
-| -------------- | ------------------------------- |
-| Gauche (Left)  | UG, DVG, FG, EELV, DVE          |
-| Centre         | ENS, LREM, UDI, MoDem, DVC      |
-| Droite (Right) | UDR, DVD, LR                    |
-| Far right      | RN, UXD, REC                    |
-| Divers / local | DIV, LDIV                       |
-| Abstention     | derived from participation data |
+| Bloc (`bloc`)  | Example nuances                   |
+| -------------- | --------------------------------- |
+| Extrême gauche | LEXG, LFI                         |
+| Gauche         | LCOM, LSOC, LVEC, LUG, LDVG       |
+| Centre         | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
+| Droite         | LLR, LUD, LDVD, LDSV              |
+| Extrême droite | LUDR, LRN, LREC, LUXD, LEXD       |
+| Divers / local | LDIV, LECO, LREG                  |
+| Abstention     | derived from participation data   |
 
-> The political nuance codes (UG, DVG, RN, etc.) are the official coding system used by the Ministère de l'Intérieur in French electoral data. This schema groups them into 5 blocs + abstention for cleaner visual reading.
+> The political nuance codes are the Ministère de l'Intérieur's official system. The `bloc` column in the source data already groups them — this schema uses it directly, no manual remapping.
 
 ## Data sources
 
@@ -53,13 +57,19 @@ We cross-reference electoral results (Ministère de l'Intérieur) with transport
 ## Running the analysis
 
 ```bash
-pip install pandas plotly jupyter
+# with uv (recommended)
+uv sync
+uv run jupyter notebook notebooks/
+
+# or with pip
+pip install pandas plotly jupyter pyarrow
 jupyter notebook notebooks/
 ```
 
 ## Output
 
 Viz will be deployed at [shahfazal.com/elections-municipale-2026](https://shahfazal.com/elections-municipale-2026)
+
 Réutilisation submitted on data.gouv.fr
 
 ---

@@ -6,18 +6,24 @@
 
 ## The angle — v0.1
 
-**Défi 1**: Does public transport access (BPE dataset) correlate with voter abstention/turnout?
-Extended: transport access + political nuance (simplified schema) by commune.
+Two questions, same data:
+1. Does public transport access correlate with **abstention rate**?
+2. Does public transport access correlate with **which political bloc won**?
 
-## Political nuance schema (simplified)
+Both answered in one scatter plot: transport score (x), abstention rate (y), colour = winning bloc per commune. The colour answers question 2; the y-axis answers question 1.
 
-| Bin            | Nuances included                |
-| -------------- | ------------------------------- |
-| Gauche         | UG, DVG, FG, EELV, DVE          |
-| Centre         | ENS, LREM, UDI, MoDem, DVC      |
-| Droite         | UDR, DVD, LR                    |
-| Extrême droite | RN, UXD, REC                    |
-| Divers / local | DIV, LDIV                       |
+## Political nuance schema
+
+Sourced from the `bloc` column in `nuances.csv` (Ministère de l'Intérieur official coding). No manual remapping — use the `bloc` field directly from the nuances join.
+
+| Bloc (`bloc`)  | Example nuances             |
+| -------------- | --------------------------- |
+| EXG            | LEXG, LFI                   |
+| GAU            | LCOM, LSOC, LVEC, LUG, LDVG |
+| CENT           | LREN, LMDM, LHOR, LUC, LDVC |
+| DTE            | LLR, LUD, LDVD, LDSV        |
+| EXD            | LUDR, LRN, LREC, LUXD, LEXD |
+| DIV            | LDIV, LECO, LREG             |
 | Abstention     | derived from participation data |
 
 ## Analysis level
@@ -38,7 +44,7 @@ pandas notebook → aggregate bureau de vote → commune → join BPE transport 
 ## Primary visualisations (both)
 
 1. **Choropleth map** — communes coloured by abstention rate or transport score. Geographic story. datagouv explicitly encourages maps.
-2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by political nuance bin. Shows the correlation directly.
+2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by winning bloc. Shows both correlations at once: transport → abstention (y-axis), transport → political colour (dot colour).
 
 Map tells the story. Scatter proves the point.
 
