@@ -1,4 +1,4 @@
-# Élections municipales 2026 : L’accès aux transports influence-t-il l’abstention ?
+# Élections municipales 2026 : L’accès aux transports influence-t-il l’abstention et les blocs politiques ?
 
 Analyse du open data croisant résultats électoraux et équipements de transport — Soumis au [défi data.gouv.fr](https://www.data.gouv.fr/posts/ouverture-du-challenge-open-data-resultats-des-elections-municipales).
 
