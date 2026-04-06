@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <title>Prix au m² et résultats électoraux — Municipales 2026</title>
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
     <link
@@ -73,11 +74,23 @@
       }
 
       body {
+        max-width: 1400px;
+        margin: 0 auto;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
           sans-serif;
-        background: #ffffff;
+        background: rgb(29, 30, 32);
         color: #1a1a1a;
+        padding: 0;
+      }
+
+      /* ── Content wrapper — white card centered on dark body ─────────────────── */
+
+      .viz-content {
+        position: relative;
+        background: #ffffff;
+        max-width: 1400px;
+        margin: 0 auto;
         padding: 24px 32px 48px;
       }
 
@@ -90,6 +103,7 @@
       .viz-title {
         font-size: 1.35rem;
         font-weight: 700;
+        color: #1a1a1a;
         line-height: 1.3;
         margin-bottom: 4px;
       }
@@ -460,7 +474,7 @@
 
       .viz-footer {
         font-size: 0.78rem;
-        color: #999;
+        color: #777;
         margin-top: 12px;
       }
 
@@ -474,7 +488,7 @@
       /* ── Tour help button ────────────────────────────────────────────────────── */
 
       #tour-help-btn {
-        position: fixed;
+        position: absolute;
         bottom: 24px;
         right: 24px;
         width: 36px;
@@ -503,121 +517,172 @@
   <body>
     <a href="#chart" class="skip-link">Aller au graphique</a>
 
-    <header class="viz-header">
-      <h1 class="viz-title">
-        Prix au m² et résultats électoraux : comment les communes ont voté aux
-        Municipales 2026
-      </h1>
-      <p class="viz-subtitle">
-        Analyse des 838 communes de plus de 9 000 habitants — Sources :
-        résultats électoraux (Ministère de l'Intérieur), prix immobiliers (DVF
-        2024)
-      </p>
-      <nav class="tour-toggle" aria-label="Sélection du tour">
-        <button
-          type="button"
-          class="tour-btn"
-          id="btn-tour1"
-          aria-pressed="false"
-          title="Premier tour du 15 mars — résultats avant reports de voix"
+    <nav
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 32px;
+        background: rgb(29, 30, 32);
+        border-bottom: 1px solid #333;
+      "
+    >
+      <a
+        href="https://shahfazal.com"
+        style="
+          font-weight: 700;
+          font-size: 24px;
+          color: rgb(218, 218, 219);
+          text-decoration: none;
+        "
+        >Shahfazal</a
+      >
+      <div style="display: flex; gap: 24px; font-size: 16px">
+        <a
+          href="https://shahfazal.com/projects/"
+          style="color: #aaa; text-decoration: none"
+          >Projects</a
         >
-          1er tour — 15 mars
-        </button>
-        <button
-          type="button"
-          class="tour-btn active"
-          id="btn-tour2"
-          aria-pressed="true"
-          title="Second tour du 22 mars — résultats définitifs après reports de voix"
+        <a
+          href="https://shahfazal.com/posts/"
+          style="color: #aaa; text-decoration: none"
+          >Writing</a
         >
-          2nd tour — 22 mars
-        </button>
-      </nav>
-    </header>
+        <a
+          href="https://shahfazal.com/about/"
+          style="color: #aaa; text-decoration: none"
+          >About</a
+        >
+      </div>
+    </nav>
 
-    <div class="search-area">
-      <div class="search-wrapper">
-        <label for="commune-input" class="sr-only"
-          >Rechercher une commune</label
-        >
-        <input
-          type="search"
-          id="commune-input"
-          placeholder="Rechercher une commune... (ex : Paris)"
-          autocomplete="off"
-          spellcheck="false"
-          aria-autocomplete="list"
-          aria-controls="autocomplete-dropdown"
-          aria-expanded="false"
-          aria-haspopup="listbox"
-        />
+    <div class="viz-content">
+      <header class="viz-header">
+        <h1 class="viz-title">
+          Prix au m² et résultats électoraux : comment les communes ont voté aux
+          Municipales 2026
+        </h1>
+        <p class="viz-subtitle">
+          Analyse des 838 communes de plus de 9 000 habitants — Sources :
+          résultats électoraux (Ministère de l'Intérieur), prix immobiliers (DVF
+          2024)
+        </p>
+        <nav class="tour-toggle" aria-label="Sélection du tour">
+          <button
+            type="button"
+            class="tour-btn"
+            id="btn-tour1"
+            aria-pressed="false"
+            title="Premier tour du 15 mars — résultats avant reports de voix"
+          >
+            1er tour — 15 mars
+          </button>
+          <button
+            type="button"
+            class="tour-btn active"
+            id="btn-tour2"
+            aria-pressed="true"
+            title="Second tour du 22 mars — résultats définitifs après reports de voix"
+          >
+            2nd tour — 22 mars
+          </button>
+        </nav>
+      </header>
+
+      <div class="search-area">
+        <div class="search-wrapper">
+          <label for="commune-input" class="sr-only"
+            >Rechercher une commune</label
+          >
+          <input
+            type="search"
+            id="commune-input"
+            placeholder="Rechercher une commune... (ex : Paris)"
+            autocomplete="off"
+            spellcheck="false"
+            aria-autocomplete="list"
+            aria-controls="autocomplete-dropdown"
+            aria-expanded="false"
+            aria-haspopup="listbox"
+          />
+          <div
+            id="autocomplete-dropdown"
+            role="listbox"
+            aria-label="Communes correspondantes"
+          ></div>
+        </div>
         <div
-          id="autocomplete-dropdown"
-          role="listbox"
-          aria-label="Communes correspondantes"
+          id="pills-container"
+          role="list"
+          aria-label="Communes sélectionnées"
+          aria-live="polite"
+          aria-atomic="false"
         ></div>
       </div>
-      <div
-        id="pills-container"
-        role="list"
-        aria-label="Communes sélectionnées"
-        aria-live="polite"
-        aria-atomic="false"
-      ></div>
-    </div>
 
-    <div class="chart-wrapper">
-      <div
-        id="chart"
-        role="region"
-        aria-label="Nuage de points interactif : prix médian au m² (axe x, échelle log) vs taux d'abstention (axe y). Clique sur un point pour le sélectionner. Utilise la recherche ci-dessus pour filtrer par commune."
-      ></div>
-      <div
-        id="pinned-tooltip"
-        hidden
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      ></div>
+      <div class="chart-wrapper">
+        <div
+          id="chart"
+          role="region"
+          aria-label="Nuage de points interactif : prix médian au m² (axe x, échelle log) vs taux d'abstention (axe y). Clique sur un point pour le sélectionner. Utilise la recherche ci-dessus pour filtrer par commune."
+        ></div>
+        <div
+          id="pinned-tooltip"
+          hidden
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+        <button
+          type="button"
+          id="reset-btn"
+          aria-label="Réinitialiser la sélection"
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          ↺ Réinitialiser
+        </button>
+        <div
+          id="custom-legend"
+          role="group"
+          aria-label="Filtre par bloc politique"
+        >
+          <div class="legend-title" role="heading" aria-level="3">
+            Bloc politique
+          </div>
+        </div>
+        <div id="tour1-overlay" aria-live="polite">
+          <div class="tour1-message">
+            <span class="tour1-icon" aria-hidden="true">🗓️</span>
+            <strong>Données du 1er tour en cours de préparation</strong>
+            <p>
+              L'analyse du premier tour (15 mars 2026) sera disponible
+              prochainement.<br />En attendant, explorez les résultats du second
+              tour.
+            </p>
+            <button type="button" class="tour1-back-btn" id="btn-back-tour2">
+              Voir le 2nd tour →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p class="viz-footer">
+          Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
+          immobiliers (DVF 2024, data.gouv.fr)
+        </p>
+      </footer>
+
       <button
         type="button"
-        id="reset-btn"
-        aria-label="Réinitialiser la sélection"
-        aria-hidden="true"
+        id="tour-help-btn"
+        aria-label="Relancer le guide interactif"
       >
-        ↺ Réinitialiser
+        ?
       </button>
-      <div
-        id="custom-legend"
-        role="group"
-        aria-label="Filtre par bloc politique"
-      >
-        <div class="legend-title" role="heading" aria-level="3">
-          Bloc politique
-        </div>
-      </div>
-      <div id="tour1-overlay" aria-live="polite">
-        <div class="tour1-message">
-          <span class="tour1-icon" aria-hidden="true">🗓️</span>
-          <strong>Données du 1er tour en cours de préparation</strong>
-          <p>
-            L'analyse du premier tour (15 mars 2026) sera disponible
-            prochainement.<br />En attendant, explorez les résultats du second
-            tour.
-          </p>
-          <button type="button" class="tour1-back-btn" id="btn-back-tour2">
-            Voir le 2nd tour →
-          </button>
-        </div>
-      </div>
     </div>
-
-    <footer>
-      <p class="viz-footer">
-        Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
-        immobiliers (DVF 2024, data.gouv.fr)
-      </p>
-    </footer>
+    <!-- /.viz-content -->
 
     <script>
       "use strict";
@@ -627,7 +692,7 @@
       const CHART_ID = "chart";
 
       // Switch to './data/' when deploying to shahfazal.com/elections-2026/
-      const DATA_BASE = "../data/processed/";
+      const DATA = "../data/processed/";
 
       const BLOC_COLORS = {
         EXG: "#cc0000",
@@ -691,7 +756,7 @@
 
       // ── Data fetch ──────────────────────────────────────────────────────────────
 
-      fetch(DATA_BASE + "prix-logement-elections.json")
+      fetch(DATA + "prix-logement-elections.json")
         .then((r) => {
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           return r.json();
@@ -952,8 +1017,9 @@
 
         const resetBtn = document.getElementById("reset-btn");
         resetBtn.classList.toggle("visible", hasAny);
-        // Keep aria-hidden in sync — hidden button must not be announced by screen readers
+        // Keep aria-hidden + tabindex in sync — hidden button must not be focusable
         resetBtn.setAttribute("aria-hidden", hasAny ? "false" : "true");
+        resetBtn.tabIndex = hasAny ? 0 : -1;
 
         if (!hasAny) {
           // Reset: restore all traces to full hover — both properties must be reset together
@@ -1063,10 +1129,11 @@
             Plotly.relayout(CHART_ID, { hovermode: "closest" });
           } else {
             clickedCommune = nom;
-            // d2p handles log scale internally; _offset is the axis margin in SVG coords
+            // Use the actual mouse position — d2p + _offset drifts on log axes
+            const chartRect = chartEl.getBoundingClientRect();
             const pixelPos = {
-              x: pt.xaxis.d2p(pt.x) + (pt.xaxis._offset || 0),
-              y: pt.yaxis.d2p(pt.y) + (pt.yaxis._offset || 0),
+              x: e.event.clientX - chartRect.left,
+              y: e.event.clientY - chartRect.top,
             };
             showPinnedTooltip(pt.customdata, pixelPos);
             Plotly.relayout(CHART_ID, { hovermode: false });
@@ -1117,19 +1184,21 @@
         const layout = chartEl._fullLayout;
         const chartW = chartEl.offsetWidth;
         const chartH = chartEl.offsetHeight;
-        // Use actual Plotly margins so flip threshold is exact, not a magic number
-        const mr = layout.margin.r || 20;
         const mt = layout.margin.t || 0;
+
+        // Right boundary: subtract the legend panel width (170px) + its right gap (20px)
+        // from chartW. Avoids offsetLeft which is relative to chart-wrapper, not #chart.
+        const RIGHT_BOUNDARY = chartW - 190;
 
         const { x: ptX, y: ptY } =
           pixelPos || dataToPixel(cd[CD.PRIX], cd[CD.ABSTENTION]);
 
-        // Default: top-right of the point
+        // Default: immediately right of the point
         let left = ptX + OFFSET;
         let top = ptY - TOOLTIP_H - OFFSET;
 
-        // Flip left if tooltip would overflow the plot area's right edge
-        if (left + TOOLTIP_W > chartW - mr) left = ptX - TOOLTIP_W - OFFSET;
+        // Mirror to immediately left of the point if tooltip would overflow into legend/edge
+        if (left + TOOLTIP_W > RIGHT_BOUNDARY) left = ptX - TOOLTIP_W - OFFSET;
         // Flip down if tooltip would clip above the chart
         if (top < mt) top = ptY + OFFSET;
 
@@ -1473,6 +1542,7 @@
           const btn = document.getElementById("reset-btn");
           btn.classList.remove("visible");
           btn.setAttribute("aria-hidden", "true");
+          btn.tabIndex = -1;
         }
 
         function demoCommune(nom) {
@@ -1514,7 +1584,7 @@
                 side: "bottom",
                 align: "center",
               },
-              onHighlightStarted: () => demoCommune("Lyon"),
+              onHighlightStarted: () => demoCommune("Montrouge"),
               onDeselected: () => resetAll(),
             },
             {
@@ -1580,6 +1650,7 @@
                 const btn = document.getElementById("reset-btn");
                 btn.classList.add("visible");
                 btn.setAttribute("aria-hidden", "false");
+                btn.tabIndex = 0;
                 btn.style.pointerEvents = "none"; // prevent accidental reset during tour
               },
               onDeselected: () => {
@@ -1596,13 +1667,5 @@
         buildTour().drive();
       }
     </script>
-
-    <button
-      type="button"
-      id="tour-help-btn"
-      aria-label="Relancer le guide interactif"
-    >
-      ?
-    </button>
   </body>
 </html>
