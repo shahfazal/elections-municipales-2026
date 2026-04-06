@@ -114,6 +114,61 @@
         margin-bottom: 16px;
       }
 
+      /* ── Viz tabs ────────────────────────────────────────────────────────────── */
+
+      .viz-tabs {
+        display: flex;
+        gap: 0;
+        margin: 20px 0 0;
+        width: 100%;
+      }
+
+      .viz-tab {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        background: #f0f0f0;
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s;
+        border-right: 1px solid #ddd;
+      }
+
+      .viz-tab:last-child {
+        border-right: none;
+      }
+
+      .viz-tab.active {
+        background: #1a1a1a;
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .viz-tab:hover:not(.active) {
+        background: #e0e0e0;
+        color: #333;
+      }
+
+      .tab-blurb {
+        font-size: 0.85rem;
+        color: #666;
+        font-style: italic;
+        margin: 12px 0 16px;
+        min-height: 1.4em;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
       /* ── Tour toggle ─────────────────────────────────────────────────────────── */
 
       .tour-toggle {
@@ -589,83 +644,163 @@
         </nav>
       </header>
 
-      <div class="search-area">
-        <div class="search-wrapper">
-          <label for="commune-input" class="sr-only"
-            >Rechercher une commune</label
-          >
-          <input
-            type="search"
-            id="commune-input"
-            placeholder="Rechercher une commune... (ex : Paris)"
-            autocomplete="off"
-            spellcheck="false"
-            aria-autocomplete="list"
-            aria-controls="autocomplete-dropdown"
-            aria-expanded="false"
-            aria-haspopup="listbox"
-          />
+      <nav class="viz-tabs" aria-label="Choisir une visualisation">
+        <button type="button" class="viz-tab active" data-panel="scatter">
+          Prix &amp; abstention
+        </button>
+        <button type="button" class="viz-tab" data-panel="boxplot">
+          Distribution par bloc
+        </button>
+        <button type="button" class="viz-tab" data-panel="plm">
+          Paris-Lyon-Marseille
+        </button>
+      </nav>
+
+      <p class="tab-blurb" id="tab-blurb"></p>
+
+      <div id="panels-wrapper" style="position: relative">
+      <div id="panel-scatter" class="tab-panel active">
+        <div class="search-area">
+          <div class="search-wrapper">
+            <label for="commune-input" class="sr-only"
+              >Rechercher une commune</label
+            >
+            <input
+              type="search"
+              id="commune-input"
+              placeholder="Rechercher une commune... (ex : Paris, Lyon, Marseille)"
+              autocomplete="off"
+              spellcheck="false"
+              aria-autocomplete="list"
+              aria-controls="autocomplete-dropdown"
+              aria-expanded="false"
+              aria-haspopup="listbox"
+            />
+            <div
+              id="autocomplete-dropdown"
+              role="listbox"
+              aria-label="Communes correspondantes"
+            ></div>
+          </div>
           <div
-            id="autocomplete-dropdown"
-            role="listbox"
-            aria-label="Communes correspondantes"
+            id="pills-container"
+            role="list"
+            aria-label="Communes sélectionnées"
+            aria-live="polite"
+            aria-atomic="false"
           ></div>
         </div>
-        <div
-          id="pills-container"
-          role="list"
-          aria-label="Communes sélectionnées"
-          aria-live="polite"
-          aria-atomic="false"
-        ></div>
+
+        <div class="chart-wrapper">
+          <div
+            id="chart"
+            role="region"
+            aria-label="Nuage de points interactif : prix médian au m² (axe x, échelle log) vs taux d'abstention (axe y). Clique sur un point pour le sélectionner. Utilise la recherche ci-dessus pour filtrer par commune."
+          ></div>
+          <div
+            id="pinned-tooltip"
+            hidden
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          ></div>
+          <button
+            type="button"
+            id="reset-btn"
+            aria-label="Réinitialiser la sélection"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            ↺ Réinitialiser
+          </button>
+          <div
+            id="custom-legend"
+            role="group"
+            aria-label="Filtre par bloc politique"
+          >
+            <div class="legend-title" role="heading" aria-level="3">
+              Bloc politique
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /#panel-scatter -->
+
+      <div id="panel-boxplot" class="tab-panel">
+        <div id="boxplot" style="width: 100%; height: 560px"></div>
       </div>
 
-      <div class="chart-wrapper">
-        <div
-          id="chart"
-          role="region"
-          aria-label="Nuage de points interactif : prix médian au m² (axe x, échelle log) vs taux d'abstention (axe y). Clique sur un point pour le sélectionner. Utilise la recherche ci-dessus pour filtrer par commune."
-        ></div>
-        <div
-          id="pinned-tooltip"
-          hidden
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        ></div>
-        <button
-          type="button"
-          id="reset-btn"
-          aria-label="Réinitialiser la sélection"
-          aria-hidden="true"
-          tabindex="-1"
+      <div id="panel-plm" class="tab-panel">
+        <nav
+          class="viz-tabs plm-subtabs"
+          aria-label="Choisir une ville"
+          style="margin-top: 0"
         >
-          ↺ Réinitialiser
-        </button>
+          <button type="button" class="viz-tab active" data-plm="paris">
+            Paris
+          </button>
+          <button type="button" class="viz-tab" data-plm="lyon">Lyon</button>
+          <button type="button" class="viz-tab" data-plm="marseille">
+            Marseille
+          </button>
+        </nav>
+        <p class="tab-blurb" id="plm-blurb" style="margin-top: 12px"></p>
+
         <div
-          id="custom-legend"
-          role="group"
-          aria-label="Filtre par bloc politique"
+          id="plm-panel-paris"
+          class="tab-panel active"
+          style="
+            padding: 48px 0;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+          "
         >
-          <div class="legend-title" role="heading" aria-level="3">
-            Bloc politique
-          </div>
+          Visualisation Paris par arrondissement — en cours de construction.
         </div>
-        <div id="tour1-overlay" aria-live="polite">
-          <div class="tour1-message">
-            <span class="tour1-icon" aria-hidden="true">🗓️</span>
-            <strong>Données du 1er tour en cours de préparation</strong>
-            <p>
-              L'analyse du premier tour (15 mars 2026) sera disponible
-              prochainement.<br />En attendant, explorez les résultats du second
-              tour.
-            </p>
-            <button type="button" class="tour1-back-btn" id="btn-back-tour2">
-              Voir le 2nd tour →
-            </button>
-          </div>
+        <div
+          id="plm-panel-lyon"
+          class="tab-panel"
+          style="
+            padding: 48px 0;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+          "
+        >
+          Visualisation Lyon par arrondissement — en cours de construction.
+        </div>
+        <div
+          id="plm-panel-marseille"
+          class="tab-panel"
+          style="
+            padding: 48px 0;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+          "
+        >
+          Visualisation Marseille par secteur — en cours de construction.
         </div>
       </div>
+      <!-- /#panel-plm -->
+
+      <div id="tour1-overlay" aria-live="polite">
+        <div class="tour1-message">
+          <span class="tour1-icon" aria-hidden="true">🗓️</span>
+          <strong>Données du 1er tour en cours de préparation</strong>
+          <p>
+            L'analyse du premier tour (15 mars 2026) sera disponible
+            prochainement.<br />En attendant, explorez les résultats du
+            second tour.
+          </p>
+          <button type="button" class="tour1-back-btn" id="btn-back-tour2">
+            Voir le 2nd tour →
+          </button>
+        </div>
+      </div>
+      </div>
+      <!-- /#panels-wrapper -->
 
       <footer>
         <p class="viz-footer">
@@ -1588,6 +1723,19 @@
               onDeselected: () => resetAll(),
             },
             {
+              element: ".viz-tabs",
+              popover: {
+                title: "Trois visualisations",
+                description:
+                  "<b>Prix &amp; abstention</b> — un point par commune, couleur = bloc gagnant.<br>" +
+                  "<b>Distribution par bloc</b> — boîtes à moustaches des prix par bloc politique.<br>" +
+                  "<b>Paris-Lyon-Marseille</b> — analyse par arrondissement pour les trois grandes villes.<br><br>" +
+                  "Le bouton <b>?</b> lance un guide spécifique à chaque onglet.",
+                side: "bottom",
+                align: "start",
+              },
+            },
+            {
               element: "#commune-input",
               popover: {
                 title: "Trouver une commune",
@@ -1662,10 +1810,262 @@
         });
       }
 
+      function launchBoxPlotTour() {
+        const { driver } = window.driver.js;
+        driver({
+          showProgress: false,
+          doneBtnText: "Compris",
+          allowClose: true,
+          onDestroyed: () =>
+            localStorage.setItem("elections-tour-completed", "true"),
+          steps: [
+            {
+              element: "#boxplot",
+              popover: {
+                title: "Distribution par bloc politique",
+                description:
+                  "Chaque boîte représente la <b>distribution des prix au m²</b> pour un bloc politique.<br><br>" +
+                  "La ligne centrale = <b>médiane</b>. La boîte = Q1–Q3 (50% des communes). " +
+                  "Les points isolés = <b>valeurs extrêmes</b>.<br><br>" +
+                  "Les triangles ▲▼ indiquent la commune la plus chère et la moins chère du bloc.",
+                side: "top",
+                align: "center",
+              },
+            },
+          ],
+        }).drive();
+      }
+
+      function launchPLMTour() {
+        const { driver } = window.driver.js;
+        driver({
+          showProgress: false,
+          doneBtnText: "Compris",
+          allowClose: true,
+          steps: [
+            {
+              popover: {
+                title: "Paris-Lyon-Marseille",
+                description:
+                  "Cette section explorera les prix au m² et les résultats électoraux <b>par arrondissement</b> pour Paris, Lyon et Marseille.<br><br>" +
+                  "<em>Visualisation en cours de construction — disponible prochainement.</em>",
+              },
+            },
+          ],
+        }).drive();
+      }
+
       function launchTour() {
-        // Always rebuild — Driver.js instances can't be re-driven after destruction
+        const activeTab = document.querySelector(
+          ".viz-tab:not([data-plm]).active",
+        )?.dataset.panel;
+        if (activeTab === "boxplot") {
+          launchBoxPlotTour();
+          return;
+        }
+        if (activeTab === "plm") {
+          launchPLMTour();
+          return;
+        }
+        // Default: scatter tour
         buildTour().drive();
       }
+
+      // ── Box plot ────────────────────────────────────────────────────────────────
+
+      // Register FR locale for box plot number formatting (thousands separator = espace insécable)
+      Plotly.register({
+        moduleType: "locale",
+        name: "fr",
+        dictionary: {},
+        format: {
+          thousands: "\u00a0",
+          decimal: ",",
+        },
+      });
+
+      let boxplotReady = false;
+
+      function initBoxPlot() {
+        if (boxplotReady) return;
+        boxplotReady = true;
+
+        const traces = [];
+
+        BLOC_ORDER.forEach((bloc) => {
+          const pts = traceData[bloc];
+          const prices = pts
+            .map((d) => d.median_prix_m2)
+            .filter((v) => v != null);
+          const color = BLOC_COLORS[bloc];
+          const label = BLOC_LABELS[bloc] || bloc;
+
+          // Box trace
+          traces.push({
+            type: "box",
+            name: label,
+            y: prices,
+            x: Array(prices.length).fill(label),
+            marker: { color },
+            line: { color },
+            fillcolor: color + "33", // 20% opacity fill
+            boxpoints: "outliers",
+            width: 0.3,
+            hovertemplate:
+              "<b>%{x}</b><br>" +
+              "Max : %{upperfence:,.0f} €/m²<br>" +
+              "Q3 : %{q3:,.0f} €/m²<br>" +
+              "Médiane : %{median:,.0f} €/m²<br>" +
+              "Q1 : %{q1:,.0f} €/m²<br>" +
+              "Min : %{lowerfence:,.0f} €/m²" +
+              "<extra></extra>",
+            showlegend: false,
+          });
+
+          // Min/max markers
+          if (pts.length === 0) return;
+          const sorted = [...pts]
+            .filter((d) => d.median_prix_m2 != null)
+            .sort((a, b) => a.median_prix_m2 - b.median_prix_m2);
+          const minPt = sorted[0];
+          const maxPt = sorted[sorted.length - 1];
+
+          // Triangle-up: highest price
+          traces.push({
+            type: "scatter",
+            mode: "markers+text",
+            x: [label],
+            y: [maxPt.median_prix_m2],
+            text: [maxPt.nom_commune],
+            textposition: "top center",
+            textfont: { size: 9, color: "#333" },
+            marker: { symbol: "triangle-up", size: 9, color },
+            hoverinfo: "skip",
+            showlegend: false,
+          });
+
+          // Triangle-down: lowest price
+          traces.push({
+            type: "scatter",
+            mode: "markers+text",
+            x: [label],
+            y: [minPt.median_prix_m2],
+            text: [minPt.nom_commune],
+            textposition: "bottom center",
+            textfont: { size: 9, color: "#333" },
+            marker: { symbol: "triangle-down", size: 9, color },
+            hoverinfo: "skip",
+            showlegend: false,
+          });
+        });
+
+        const layout = {
+          yaxis: {
+            type: "log",
+            title: {
+              text: "Prix médian au m² (€, échelle log)",
+              font: { size: 12 },
+            },
+            showgrid: true,
+            gridcolor: "#eeeeee",
+            tickvals: [500, 1000, 2000, 3000, 5000, 7000, 10000, 15000],
+            ticktext: [
+              "500",
+              "1\u00a0000",
+              "2\u00a0000",
+              "3\u00a0000",
+              "5\u00a0000",
+              "7\u00a0000",
+              "10\u00a0000",
+              "15\u00a0000",
+            ],
+          },
+          xaxis: {
+            title: { text: "Bloc politique vainqueur", font: { size: 12 } },
+            categoryorder: "array",
+            categoryarray: BLOC_ORDER.map((b) => BLOC_LABELS[b] || b),
+          },
+          plot_bgcolor: "white",
+          paper_bgcolor: "white",
+          margin: { l: 70, r: 20, t: 20, b: 60 },
+          hovermode: "closest",
+          dragmode: false,
+        };
+
+        Plotly.newPlot("boxplot", traces, layout, {
+          displayModeBar: false,
+          scrollZoom: false,
+          responsive: true,
+          locale: "fr",
+        });
+      }
+
+      // ── Viz tab switching ───────────────────────────────────────────────────────
+
+      const TAB_BLURBS = {
+        scatter:
+          "Un point par commune. Comment les prix immobiliers et les taux d'abstention varient-ils selon les communes ? Recherchez une commune pour voir ses détails (ex\u00a0: Paris, Lyon, Marseille).",
+        boxplot:
+          "La distribution complète des prix au m² selon le bloc politique vainqueur. Les communes les plus chères votent-elles différemment\u00a0?",
+        plm: "Analyse détaillée des prix et des résultats électoraux dans les trois plus grandes villes de France. Sélectionnez une ville pour explorer ses arrondissements ou secteurs.",
+      };
+
+      function switchVizTab(panel) {
+        document
+          .querySelectorAll(".viz-tab:not([data-plm])")
+          .forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.panel === panel),
+          );
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) =>
+            p.classList.toggle("active", p.id === "panel-" + panel),
+          );
+        document.getElementById("tab-blurb").textContent =
+          TAB_BLURBS[panel] || "";
+        if (panel === "boxplot") initBoxPlot();
+      }
+
+      const PLM_BLURBS = {
+        paris:
+          "Prix au m² et résultats électoraux par arrondissement parisien. Les arrondissements centraux votent-ils différemment des périphériques\u00a0?",
+        lyon: "Analyse des prix et des votes par arrondissement lyonnais. Quels arrondissements combinent prix élevés et forte participation électorale\u00a0?",
+        marseille:
+          "Focus sur les secteurs marseillais\u00a0: prix au m² et résultats électoraux. Les secteurs les plus chers votent-ils différemment\u00a0?",
+      };
+
+      function switchPLMSubtab(city) {
+        document
+          .querySelectorAll("[data-plm]")
+          .forEach((btn) =>
+            btn.classList.toggle("active", btn.dataset.plm === city),
+          );
+        document
+          .querySelectorAll("[id^='plm-panel-']")
+          .forEach((p) =>
+            p.classList.toggle("active", p.id === "plm-panel-" + city),
+          );
+        document.getElementById("plm-blurb").textContent =
+          PLM_BLURBS[city] || "";
+      }
+
+      // PLM sub-tab clicks
+      document
+        .querySelectorAll("[data-plm]")
+        .forEach((btn) =>
+          btn.addEventListener("click", () => switchPLMSubtab(btn.dataset.plm)),
+        );
+
+      // Main viz tab clicks (exclude PLM sub-tabs which have data-plm)
+      document
+        .querySelectorAll(".viz-tab:not([data-plm])")
+        .forEach((btn) =>
+          btn.addEventListener("click", () => switchVizTab(btn.dataset.panel)),
+        );
+
+      // Set initial blurbs
+      switchVizTab("scatter");
+      switchPLMSubtab("paris");
     </script>
   </body>
 </html>
