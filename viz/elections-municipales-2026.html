@@ -954,12 +954,21 @@
           consultes cette visualisation sur ton ordinateur.
         </p>
         <p class="viz-footer">
+          En savoir plus : méthodologie, données sources, et notes
+          d'accessibilité - cliques
+          <a
+            href="/projects/elections-municipales-2026/"
+            style="color: #0066cc"
+          >
+            ici
+          </a>
+          · Des questions ou retours ?
           <a
             href="https://linkedin.com/in/shahfazalmohammed"
             target="_blank"
             rel="noopener"
           >
-            Des questions ou retours ? → LinkedIn
+            → LinkedIn
           </a>
         </p>
       </footer>
@@ -982,7 +991,7 @@
 
       const CHART_ID = "chart";
 
-      // Switch to './data/' when deploying to shahfazal.com/elections-2026/
+      // Switch to './data/' when deploying to shahfazal.com/elections-municipales-2026/
       const DATA = "../data/processed/";
 
       const BLOC_COLORS = {
@@ -2277,7 +2286,6 @@
       let plmData = null;
       const plmMaps = {};
       const plmMapInited = {};
-      const plmBounds = {}; // stored after first fitBounds for re-use after invalidateSize
 
       const PLM_DEPT = { paris: "75", lyon: "69", marseille: "13" };
 
@@ -2440,16 +2448,13 @@
             const secteur = arrdtToSecteur[layer.feature.properties.code];
             if (!secteur?.median_prix_m2) return;
             const radius = 7 + normPrix(secteur.median_prix_m2) * 17;
-            L.circleMarker(
-              geoCentroid(layer.feature) || layer.getBounds().getCenter(),
-              {
-                radius,
-                fillColor: "#fff",
-                fillOpacity: 0.82,
-                color: BLOC_COLORS[secteur.winning_bloc] || "#aaa",
-                weight: 2.5,
-              },
-            )
+            L.circleMarker(geoCentroid(layer.feature), {
+              radius,
+              fillColor: "#fff",
+              fillOpacity: 0.82,
+              color: BLOC_COLORS[secteur.winning_bloc] || "#aaa",
+              weight: 2.5,
+            })
               .bindTooltip(tooltipHtml(layer.feature), {
                 sticky: true,
                 direction: "right",
@@ -2458,7 +2463,6 @@
           });
 
           const bounds = geoLayer.getBounds();
-          plmBounds[city] = bounds;
           map.fitBounds(bounds, { padding: [20, 20] });
 
           // ── City-level winner badge ───────────────────────────────────────────────
