@@ -18,24 +18,46 @@ Chaque commune devient un point : axe x = prix médian au m² (échelle log), ax
 
 ## Schéma politique
 
-| Bloc (`bloc`)  | Exemples de nuances                  |
-| -------------- | ------------------------------------ |
-| EXG            | LEXG, LFI                            |
-| GAU            | LCOM, LSOC, LVEC, LUG, LDVG          |
-| CENT           | LREN, LMDM, LHOR, LUC, LDVC, LUDI    |
-| DTE            | LLR, LUD, LDVD, LDSV                 |
-| EXD            | LUDR, LRN, LREC, LUXD, LEXD          |
-| DIV            | LDIV, LECO, LREG                     |
+| Bloc (`bloc`) | Exemples de nuances               |
+| ------------- | --------------------------------- |
+| EXG           | LEXG, LFI                         |
+| GAU           | LCOM, LSOC, LVEC, LUG, LDVG       |
+| CENT          | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
+| DTE           | LLR, LUD, LDVD, LDSV              |
+| EXD           | LUDR, LRN, LREC, LUXD, LEXD       |
+| DIV           | LDIV, LECO, LREG                  |
 
 > Les codes de nuance politique sont ceux du Ministère de l'Intérieur. La colonne `bloc` dans les données officielles regroupe déjà ces codes — pas de remapping manuel.
 
 ## Données
 
-| Source                   | Description                                                                  |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| Ministère de l'Intérieur | Résultats du 2ème tour 2026 (`commune.parquet`)                              |
-| Ministère de l'Intérieur | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)           |
-| DVF 2024 (data.gouv.fr)  | Transactions résidentielles — prix médian au m² par commune/arrondissement   |
+| Source                   | Description                                                                |
+| ------------------------ | -------------------------------------------------------------------------- |
+| Ministère de l'Intérieur | Résultats du 2ème tour 2026 (`commune.parquet`)                            |
+| Ministère de l'Intérieur | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)         |
+| DVF 2024 (data.gouv.fr)  | Transactions résidentielles — prix médian au m² par commune/arrondissement |
+
+## Sources de données
+
+Pour reproduire cette analyse, téléchargez les données suivantes :
+
+### Résultats électoraux
+
+- **Source** : Ministère de l'Intérieur
+- **Élections** : Municipales 2026, 2ème tour (22 mars 2026)
+- **Lien** : [data.gouv.fr - Résultats des élections municipales 2026](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-second-tour)
+  _(Note: Vérifiez la page data.gouv.fr pour le lien exact — l'URL peut varier)_
+
+### Prix immobiliers (DVF)
+
+- **Source** : Direction générale des Finances publiques (DGFiP)
+- **Période** : 2024 et 2025
+- **Lien** : [data.gouv.fr - Demandes de valeurs foncières (DVF)](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/)
+- **Fichier utilisé** : `valeursfoncieres-2024.txt` et `valeursfoncieres-2025.txt` (format CSV)
+
+## Structure des données attendue
+
+Les notebooks s'attendent à trouver les fichiers dans un dossier `data/` à la racine :
 
 ## Structure du dépôt
 
