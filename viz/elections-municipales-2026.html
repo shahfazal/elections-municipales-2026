@@ -502,8 +502,8 @@
           border-color: #1a1a1a;
         }
         50% {
-          background: #666;
-          border-color: #666;
+          background: #999;
+          border-color: #999;
         }
       }
       #reset-btn.pulse {
@@ -822,7 +822,7 @@
               aria-hidden="true"
               tabindex="-1"
             >
-              ↺ Réinitialiser
+              ↺ Réinitialiser <span style="opacity:.55;font-size:.8em">(ESC)</span>
             </button>
             <div
               id="custom-legend"
@@ -949,6 +949,11 @@
         <p class="viz-footer">
           Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
           immobiliers (DVF 2024, data.gouv.fr)
+        </p>
+        <p class="viz-footer">
+          <a href="https://linkedin.com/in/shahfazalmohammed" target="_blank" rel="noopener">
+            Des questions ou retours ? → LinkedIn
+          </a>
         </p>
       </footer>
 
@@ -1904,7 +1909,7 @@
               popover: {
                 title: "Filtrer par bloc politique",
                 description:
-                  "Clique sur un <b>bloc politique</b> pour n'afficher que ses communes.<br><em>Plusieurs blocs peuvent être sélectionnés simultanément.</em><br>Utilise <b>↺ Réinitialiser</b> pour tout effacer et revenir à la vue complète.",
+                  "Clique sur un <b>bloc politique</b> pour n'afficher que ses communes.<br><em>Plusieurs blocs peuvent être sélectionnés simultanément.</em><br>Utilise <b>↺ Réinitialiser</b> ou la touche <b>Échap</b> pour tout effacer et revenir à la vue complète.",
                 side: "left",
                 align: "start",
               },
@@ -1937,7 +1942,7 @@
               popover: {
                 title: "↺ Réinitialiser",
                 description:
-                  "Le bouton <b>↺ Réinitialiser</b> est le <b>seul moyen</b> de tout effacer d'un coup :<ul style=\"margin:.5em 0 0 1.2em;line-height:1.6\"><li><b>Communes sélectionnées</b> (clics sur les points),</li><li><b>Filtres de blocs politiques</b> actifs,</li><li><b>Commune recherchée</b> en cours.</li></ul><em>Il n'apparaît que lorsqu'une sélection ou un filtre est actif.</em><br><b>Un clic suffira pour revenir à la vue initiale complète.</b>",
+                  "Le bouton <b>↺ Réinitialiser</b> (ou la touche <b>Échap</b>) efface tout d'un coup :<ul style=\"margin:.5em 0 0 1.2em;line-height:1.6\"><li><b>Communes sélectionnées</b> (clics sur les points),</li><li><b>Filtres de blocs politiques</b> actifs,</li><li><b>Commune recherchée</b> en cours.</li></ul><em>Il n'apparaît que lorsqu'une sélection ou un filtre est actif.</em><br><b>Un clic ou Échap suffit pour revenir à la vue initiale complète.</b>",
                 side: "left",
                 align: "start",
               },
@@ -1960,7 +1965,10 @@
       function launchBoxPlotTour() {
         const { driver } = window.driver.js;
         driver({
-          showProgress: false,
+          showProgress: true,
+          progressText: "{{current}} / {{total}}",
+          nextBtnText: "Suivant →",
+          prevBtnText: "← Précédent",
           doneBtnText: "Terminer",
           allowClose: true,
           onDestroyed: () =>
@@ -1989,16 +1997,22 @@
         const activeCity =
           document.querySelector("[data-plm].active")?.dataset.plm || "paris";
         driver({
-          showProgress: false,
+          showProgress: true,
+          progressText: "{{current}} / {{total}}",
+          nextBtnText: "Suivant →",
+          prevBtnText: "← Précédent",
           doneBtnText: "Terminer",
           allowClose: true,
           steps: [
             {
+              element: ".plm-subtabs",
               popover: {
                 title: "Paris-Lyon-Marseille",
                 description:
                   "Cette section explore les <b>prix au m²</b> et les <b>résultats électoraux</b> par arrondissement pour <b>Paris, Lyon et Marseille</b>.<br><br>" +
-                  "Sélectionnez une ville via les sous-onglets pour afficher sa carte.",
+                  "Choisis une ville via ces sous-onglets pour afficher sa carte.",
+                side: "bottom",
+                align: "start",
               },
             },
             {
@@ -2010,7 +2024,7 @@
                   "<li><b>Couleur de fond</b> : bloc politique vainqueur au 2ème tour.</li>" +
                   "<li><b>Taille du cercle</b> : prix médian au m² — plus le cercle est grand, plus l'arrondissement est cher.</li>" +
                   "<li><b>Info-bulle</b> : prix, abstention, transactions DVF 2024.</li></ul>" +
-                  "<em>Survolez un arrondissement ou un cercle pour voir ses détails.</em>",
+                  "<em>Survoles un arrondissement ou un cercle pour voir ses détails.</em>",
               },
             },
           ],
@@ -2173,7 +2187,7 @@
           "Un point par commune — 2ème tour du 22 mars 2026. Comment les prix immobiliers et les taux d'abstention varient-ils selon le bloc vainqueur\u00a0?",
         boxplot:
           "Distribution des prix au m² par bloc politique vainqueur au 2ème tour. Les communes les plus chères votent-elles différemment\u00a0?",
-        plm: "Résultats du 2ème tour et prix au m² par arrondissement dans les trois plus grandes villes de France. Sélectionnez une ville.",
+        plm: "Résultats du 2ème tour et prix au m² par arrondissement dans les trois plus grandes villes de France. Choisis une ville.",
       };
 
       function switchVizTab(panel) {
@@ -2393,7 +2407,10 @@
               };
             },
             onEachFeature: (feature, layer) => {
-              layer.bindTooltip(tooltipHtml(feature), { sticky: true, direction: "right" });
+              layer.bindTooltip(tooltipHtml(feature), {
+                sticky: true,
+                direction: "right",
+              });
             },
           }).addTo(map);
 
@@ -2427,7 +2444,10 @@
                 weight: 2.5,
               },
             )
-              .bindTooltip(tooltipHtml(layer.feature), { sticky: true, direction: "right" })
+              .bindTooltip(tooltipHtml(layer.feature), {
+                sticky: true,
+                direction: "right",
+              })
               .addTo(map);
           });
 
