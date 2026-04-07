@@ -31,10 +31,10 @@ Chaque commune devient un point : axe x = prix médian au m² (échelle log), ax
 
 ## Données
 
-| Source                        | Description                                                                     |
-| ----------------------------- | ------------------------------------------------------------------------------- |
-| Ministère de l'Intérieur      | Résultats du 2ème tour 2026 (`commune.parquet`)                                 |
-| Ministère de l'Intérieur      | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)              |
+| Source                         | Description                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| Ministère de l'Intérieur       | Résultats du 2ème tour 2026 (`commune.parquet`)                                |
+| Ministère de l'Intérieur       | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)             |
 | DVF 2024 + 2025 (data.gouv.fr) | Transactions résidentielles — un JSON par année, bascule dans la visualisation |
 
 ## Sources de données
@@ -61,7 +61,7 @@ Pour reproduire cette analyse, téléchargez les données suivantes :
 /data/
     /raw/            — fichiers bruts (gitignorés)
     /processed/      — JSON propres pour la viz (versionnés, un par année)
-/viz/                — HTML statique + Plotly.js
+/viz/                — HTML + JS + CSS
 ```
 
 ## Lancer l'analyse

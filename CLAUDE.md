@@ -4,7 +4,7 @@
 
 ---
 
-## The angle — v0.5
+## The angle — v0.6
 
 Do property prices correlate with abstention rate and which political bloc won?
 
@@ -46,7 +46,10 @@ Commune-level for scatter/boxplot. Arrondissement-level for PLM maps.
 
 ## Viz architecture
 
-Single HTML file: `viz/elections-municipales-2026.html`
+Modular static files in `viz/`:
+- `elections-municipales-2026.html` — shell only (structure, no inline CSS/JS)
+- `elections-municipales-2026.css` — all styles
+- `elections-municipales-2026.js` — all logic
 - Plotly.js scatter + box plot
 - Leaflet.js PLM choropleth (GeoJSON from data.gouv.fr)
 - Driver.js help tours (3 tours, one per tab)

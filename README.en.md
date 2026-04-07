@@ -19,24 +19,24 @@ Each commune becomes a dot: x = median price per m² (log scale), y = abstention
 
 ## Political schema
 
-| Bloc (`bloc`)  | Example nuances                   |
-| -------------- | --------------------------------- |
-| EXG            | LEXG, LFI                         |
-| GAU            | LCOM, LSOC, LVEC, LUG, LDVG       |
-| CENT           | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
-| DTE            | LLR, LUD, LDVD, LDSV              |
-| EXD            | LUDR, LRN, LREC, LUXD, LEXD       |
-| DIV            | LDIV, LECO, LREG                  |
+| Bloc (`bloc`) | Example nuances                   |
+| ------------- | --------------------------------- |
+| EXG           | LEXG, LFI                         |
+| GAU           | LCOM, LSOC, LVEC, LUG, LDVG       |
+| CENT          | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
+| DTE           | LLR, LUD, LDVD, LDSV              |
+| EXD           | LUDR, LRN, LREC, LUXD, LEXD       |
+| DIV           | LDIV, LECO, LREG                  |
 
 > The political nuance codes are the Ministère de l'Intérieur's official system. The `bloc` column in the source data already groups them — no manual remapping.
 
 ## Data sources
 
-| Source                         | Description                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------------- |
-| Ministère de l'Intérieur       | 2nd-round results, 2026 municipal elections (`commune.parquet`)                   |
-| Ministère de l'Intérieur       | BV-level results for Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)             |
-| DVF 2024 + 2025 (data.gouv.fr) | Residential property transactions — one JSON per year, year toggle in viz         |
+| Source                         | Description                                                               |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| Ministère de l'Intérieur       | 2nd-round results, 2026 municipal elections (`commune.parquet`)           |
+| Ministère de l'Intérieur       | BV-level results for Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)     |
+| DVF 2024 + 2025 (data.gouv.fr) | Residential property transactions — one JSON per year, year toggle in viz |
 
 ### Downloading the data
 
@@ -51,7 +51,7 @@ Each commune becomes a dot: x = median price per m² (log scale), y = abstention
 /data/
     /raw/            — raw files (gitignored)
     /processed/      — clean JSON for viz (versioned, one file per year)
-/viz/                — static HTML + Plotly.js
+/viz/                — static HTML + JS + CSS
 ```
 
 ## Running the analysis

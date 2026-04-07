@@ -1106,6 +1106,8 @@
           prevBtnText: "← Précédent",
           doneBtnText: "Terminer",
           allowClose: true,
+          onDestroyed: () =>
+            localStorage.setItem("elections-tour-completed", "true"),
           steps: [
             {
               element: ".plm-subtabs",
@@ -1203,7 +1205,7 @@
           });
 
           // Min/max markers
-          if (pts.length === 0) return;
+          if (filtered.length === 0) return;
           const sorted = [...pts]
             .filter((d) => d.median_prix_m2 != null)
             .sort((a, b) => a.median_prix_m2 - b.median_prix_m2);
@@ -1390,7 +1392,6 @@
 
       async function initPLMMap(city) {
         if (plmMapInited[city]) return;
-        plmMapInited[city] = true;
 
         const mapEl = document.getElementById(`map-${city}`);
         const loader = document.createElement("div");
@@ -1455,6 +1456,8 @@
             `https://geo.api.gouv.fr/communes?codeDepartement=${dept}` +
               `&type=arrondissement-municipal&geometry=contour&format=geojson`,
           );
+          if (!geoResp.ok)
+            throw new Error(`geo.api.gouv.fr HTTP ${geoResp.status}`);
           const raw = await geoResp.json();
           // Filter out features with null/missing geometry — geo.api.gouv.fr occasionally
           // returns null geometry for arrondissements (causes Leaflet _clipPoints crash)
@@ -1611,6 +1614,7 @@
           legend.addTo(map);
 
           plmMaps[city] = map;
+          plmMapInited[city] = true;
         } catch (err) {
           // Reset flag so the user can retry by switching away and back
           plmMapInited[city] = false;
