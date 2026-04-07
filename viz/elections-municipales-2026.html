@@ -607,6 +607,7 @@
 
       .viz-footer {
         font-size: 0.78rem;
+        font-style: italic;
         color: #777;
         margin-top: 12px;
       }
@@ -822,7 +823,8 @@
               aria-hidden="true"
               tabindex="-1"
             >
-              ↺ Réinitialiser <span style="opacity:.55;font-size:.8em">(ESC)</span>
+              ↺ Réinitialiser
+              <span style="opacity: 0.55; font-size: 0.8em">(ESC)</span>
             </button>
             <div
               id="custom-legend"
@@ -948,10 +950,15 @@
       <footer>
         <p class="viz-footer">
           Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
-          immobiliers (DVF 2024, data.gouv.fr)
+          immobiliers (DVF 2024, data.gouv.fr) · Pour une meilleure expérience,
+          consultes cette visualisation sur ton ordinateur.
         </p>
         <p class="viz-footer">
-          <a href="https://linkedin.com/in/shahfazalmohammed" target="_blank" rel="noopener">
+          <a
+            href="https://linkedin.com/in/shahfazalmohammed"
+            target="_blank"
+            rel="noopener"
+          >
             Des questions ou retours ? → LinkedIn
           </a>
         </p>
@@ -1768,7 +1775,6 @@
           addPill(name);
           Plotly.relayout(CHART_ID, { hovermode: false });
           applySelection();
-          pulseResetBtn();
 
           // Show pinned tooltip when a single commune is selected via search
           // Multiple pills = no tooltip (ambiguous which point to anchor to)
