@@ -4,13 +4,14 @@
 
 ---
 
-## The angle — v0.1
+## The angle — v0.5
 
-Two questions, same data:
-1. Does public transport access correlate with **abstention rate**?
-2. Does public transport access correlate with **which political bloc won**?
+Do property prices correlate with abstention rate and which political bloc won?
 
-Both answered in one scatter plot: transport score (x), abstention rate (y), colour = winning bloc per commune. The colour answers question 2; the y-axis answers question 1.
+Three visualisations built:
+1. **Scatter plot** — median prix/m² (x, log scale) vs abstention rate (y), one dot per commune, colour = winning bloc. 838 communes >9,000 inhabitants, 2nd round 22 March 2026.
+2. **Box plot** — prix/m² distribution by winning political bloc.
+3. **Paris–Lyon–Marseille choropleth** — arrondissement-level Leaflet maps, fill = winning bloc, circle size = median prix/m². DVF 2024 transactions.
 
 ## Political nuance schema
 
@@ -24,64 +25,68 @@ Sourced from the `bloc` column in `nuances.csv` (Ministère de l'Intérieur offi
 | DTE            | LLR, LUD, LDVD, LDSV        |
 | EXD            | LUDR, LRN, LREC, LUXD, LEXD |
 | DIV            | LDIV, LECO, LREG             |
-| Abstention     | derived from participation data |
 
 ## Analysis level
 
-Commune-level (not bureau de vote) — clean join with BPE transport data.
+Commune-level for scatter/boxplot. Arrondissement-level for PLM maps.
 
-## Datasets to use
+## Datasets used
 
-- `Données des élections agrégées` — general-results.csv + candidats-results.csv
-- `Elections municipales 2026 - Résultats du second tour` (Ministère de l'Intérieur)
-- `Base permanente des équipements (BPE)` — filter for transport equipment codes (**TBD — see BPE documentation for relevant TYPEQU codes, e.g. transport stops, stations**)
-- `Population (3 tranches d'âge)` — INSEE commune-level demographics (control variable)
+- `commune.parquet` — 2nd-round commune-level results (838 communes >9,000 inhabitants)
+- `Paris_Lyon_BV.parquet` — BV-level T2 results for Paris, Lyon, Marseille arrondissements
+- `ValeursFoncieres-2024.txt` — DVF 2024 residential transactions (prix au m²)
+- `nuances.csv` — nuance code → political bloc mapping
 
 ## Data pipeline
 
-pandas notebook → aggregate bureau de vote → commune → join BPE transport → clean JSON → Plotly.js viz on shahfazal.com
+- `notebooks/01-data-exploration.ipynb` — initial schema exploration
+- `notebooks/02-prix-logement.ipynb` — commune-level prix/m² + election results → `prix-logement-elections.json`
+- `notebooks/03-transport-gtfs.ipynb` — transport angle (parked, not used in current viz)
+- `notebooks/04-plm-data.ipynb` — PLM arrondissement aggregation → `plm-secteurs.json`
 
-## Primary visualisations (both)
+## Viz architecture
 
-1. **Choropleth map** — communes coloured by abstention rate or transport score. Geographic story. datagouv explicitly encourages maps.
-2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by winning bloc. Shows both correlations at once: transport → abstention (y-axis), transport → political colour (dot colour).
-
-Map tells the story. Scatter proves the point.
+Single HTML file: `viz/elections-municipales-2026.html`
+- Plotly.js scatter + box plot
+- Leaflet.js PLM choropleth (GeoJSON from data.gouv.fr)
+- Driver.js help tours (3 tours, one per tab)
+- All labels, tooltips, copy in French (informal "tu" tone)
 
 ## Output
 
-- Jupyter notebook in /notebooks/ (self-contained, all code inline)
+- Jupyter notebooks in /notebooks/ (self-contained, outputs cleared before commit)
 - Clean JSON in /data/processed/ → committed to repo
-- Raw CSVs in /data/raw/ → gitignored
-- Viz as static HTML+JS → deployed to shahfazal.com/elections-2026
-  - These are the same thing: `static/elections-2026/` in shahfazal/shahfazal.github.io is served by Hugo at `shahfazal.com/elections-2026`. Do NOT create a Hugo content page AND a static folder — static folder only.
+- Raw files in /data/raw/ → gitignored
+- Viz as static HTML → `static/elections-municipales-2026/` in shahfazal/shahfazal.github.io
+  - Served by Hugo at `shahfazal.com/elections-municipales-2026`
+  - Static folder only — do NOT create a Hugo content page
 - Réutilisation submitted on data.gouv.fr (in French)
 
 ## Repo structure
 
 ```
-/notebooks/     — analysis notebook(s)
+/notebooks/     — analysis notebooks
 /data/
-    /raw/       — gitignored, downloaded CSVs
+    /raw/       — gitignored
     /processed/ — committed, clean JSON for viz
 /viz/           — static HTML + Plotly.js
+/notes/         — analysis scratchpad
 ```
 
 ## Stack
 
-- Python, pandas, plotly (Python for exploration)
-- Plotly.js for the web viz
+- Python, pandas (data pipeline)
+- Plotly.js, Leaflet.js, Driver.js (web viz)
 - No ML — pure data analysis and visualization
 - All viz labels, titles, tooltips in French
 
 ## Website integration
 
-Viz output goes to shahfazal/shahfazal.github.io repo under static/elections-2026/
-Project page at shahfazal.com/projects/elections-2026 to be created (English first, French version later when Hugo multilingual is set up).
+Viz output goes to shahfazal/shahfazal.github.io repo under `static/elections-municipales-2026/`
 
 ## Prior project context
 
 - shahfazal's third project after TinyNet (23-param MLP) and NYC EV charger LSTM
 - Active in French OpenData/AI space, contributes to MCP in front of data.gouv APIs
 - GitHub: shahfazal, HuggingFace: shahfazal, Medium: @shahfazal
-- Personal site: shahfazal.com (Hugo + PaperMod + GitHub Pages, just launched)
+- Personal site: shahfazal.com (Hugo + PaperMod + GitHub Pages)
