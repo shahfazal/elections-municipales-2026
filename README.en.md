@@ -1,4 +1,4 @@
-# 2026 French Municipal Elections — Transport & Abstention
+# 2026 French Municipal Elections — Property Prices, Abstention & Political Blocs
 
 Entry for the [data.gouv.fr open data challenge](https://www.data.gouv.fr/posts/ouverture-du-challenge-open-data-resultats-des-elections-municipales).
 Deadline: **April 13, 2026** · Keyword: `defi-municipales-2026-résultats`
@@ -7,51 +7,51 @@ Deadline: **April 13, 2026** · Keyword: `defi-municipales-2026-résultats`
 
 ## The question
 
-Two questions, same data:
+Do property prices correlate with abstention rate and which political bloc won?
 
-1. Does public transport access correlate with **abstention rate**?
-2. Does public transport access correlate with **which political bloc won**?
-
-Each commune becomes a dot: x = transport score, y = abstention rate, colour = winning bloc. The y-axis answers question 1, the colour answers question 2.
+Each commune becomes a dot: x = median price per m² (log scale), y = abstention rate, colour = winning bloc. The y-axis shows the price/abstention relationship; the colour shows which blocs dominate at different price levels.
 
 ## Visualisations
 
-1. **Choropleth map** — communes coloured by abstention rate or transport score. The geographic story.
-2. **Scatter plot** — transport score (x) vs abstention rate (y), one dot per commune, coloured by winning bloc. Three dimensions, one chart: transport → abstention (y-axis) and transport → political colour (dot colour).
+1. **Scatter plot** — median price per m² (x, log scale) vs abstention rate (y), one dot per commune, coloured by winning bloc. 838 communes with more than 9,000 inhabitants, 2nd round of 22 March 2026.
+2. **Box plot** — distribution of prices per m² by winning political bloc. Do the most expensive communes vote differently?
+3. **Paris–Lyon–Marseille choropleth** — arrondissement-level maps combining 2nd-round electoral results (fill colour) and median price per m² (circle size). DVF 2024 and 2025 data, with a year toggle in the viz.
 
-> **v1** — transport score vs abstention rate vs winning political bloc, submitted for the challenge.
-> Further visualisations planned: urban/rural profile, demographics vs abstention.
+## Political schema
 
-## Simplified political schema
+| Bloc (`bloc`) | Example nuances                   |
+| ------------- | --------------------------------- |
+| EXG           | LEXG, LFI                         |
+| GAU           | LCOM, LSOC, LVEC, LUG, LDVG       |
+| CENT          | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
+| DTE           | LLR, LUD, LDVD, LDSV              |
+| EXD           | LUDR, LRN, LREC, LUXD, LEXD       |
+| DIV           | LDIV, LECO, LREG                  |
 
-| Bloc (`bloc`)  | Example nuances                   |
-| -------------- | --------------------------------- |
-| Extrême gauche | LEXG, LFI                         |
-| Gauche         | LCOM, LSOC, LVEC, LUG, LDVG       |
-| Centre         | LREN, LMDM, LHOR, LUC, LDVC, LUDI |
-| Droite         | LLR, LUD, LDVD, LDSV              |
-| Extrême droite | LUDR, LRN, LREC, LUXD, LEXD       |
-| Divers / local | LDIV, LECO, LREG                  |
-| Abstention     | derived from participation data   |
-
-> The political nuance codes are the Ministère de l'Intérieur's official system. The `bloc` column in the source data already groups them — this schema uses it directly, no manual remapping.
+> The political nuance codes are the Ministère de l'Intérieur's official system. The `bloc` column in the source data already groups them — no manual remapping.
 
 ## Data sources
 
-| Source                   | Description                                                |
-| ------------------------ | ---------------------------------------------------------- |
-| Ministère de l'Intérieur | Aggregated results + candidates, 2026 municipal elections  |
-| INSEE — BPE              | Base permanente des équipements, transport equipment codes |
-| INSEE — Population       | Age distribution by commune (control variable)             |
+| Source                         | Description                                                               |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| Ministère de l'Intérieur       | 2nd-round results, 2026 municipal elections (`commune.parquet`)           |
+| Ministère de l'Intérieur       | BV-level results for Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)     |
+| DVF 2024 + 2025 (data.gouv.fr) | Residential property transactions — one JSON per year, year toggle in viz |
+
+### Downloading the data
+
+- **Electoral results**: [data.gouv.fr — Résultats des élections municipales 2026](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-second-tour)
+- **Property prices (DVF)**: [data.gouv.fr — Demandes de valeurs foncières](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/)
+  — Files used: `valeursfoncieres-2024.txt` and `valeursfoncieres-2025.txt`
 
 ## Repo structure
 
 ```
-/notebooks/          — analysis notebook (self-contained)
+/notebooks/          — analysis notebooks (self-contained, outputs cleared)
 /data/
-    /raw/            — raw CSVs (gitignored)
-    /processed/      — clean JSON for viz (versioned)
-/viz/                — static HTML + Plotly.js
+    /raw/            — raw files (gitignored)
+    /processed/      — clean JSON for viz (versioned, one file per year)
+/viz/                — static HTML + JS + CSS
 ```
 
 ## Running the analysis
@@ -68,7 +68,7 @@ jupyter notebook notebooks/
 
 ## Output
 
-Viz will be deployed at [shahfazal.com/elections-municipale-2026](https://shahfazal.com/elections-municipale-2026)
+Viz deployed at [shahfazal.com/elections-municipales-2026](https://shahfazal.com/elections-municipales-2026)
 
 Réutilisation submitted on data.gouv.fr
 

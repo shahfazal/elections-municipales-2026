@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>
+      Prix au m² et résultats électoraux — 2ème tour des Municipales 2026
+    </title>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/driver.js@1/dist/driver.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1/dist/driver.js.iife.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="./elections-municipales-2026.css" />
+
+  </head>
+  <body>
+    <a href="#panels-wrapper" class="skip-link">Aller au contenu</a>
+
+    <nav
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 32px;
+        background: rgb(29, 30, 32);
+        border-bottom: 1px solid #333;
+      "
+    >
+      <a
+        href="https://shahfazal.com"
+        style="
+          font-weight: 700;
+          font-size: 24px;
+          color: rgb(218, 218, 219);
+          text-decoration: none;
+        "
+        >Shahfazal</a
+      >
+      <div style="display: flex; gap: 24px; font-size: 16px">
+        <a
+          href="https://shahfazal.com/projects/"
+          style="color: #aaa; text-decoration: none"
+          >Projects</a
+        >
+        <a
+          href="https://shahfazal.com/posts/"
+          style="color: #aaa; text-decoration: none"
+          >Writing</a
+        >
+        <a
+          href="https://shahfazal.com/about/"
+          style="color: #aaa; text-decoration: none"
+          >About</a
+        >
+      </div>
+    </nav>
+
+    <div class="viz-content">
+      <header class="viz-header">
+        <h1 class="viz-title">
+          Prix au m² et résultats électoraux : comment les communes ont voté au
+          2ème tour des Municipales 2026
+        </h1>
+        <p class="viz-subtitle">
+          2ème tour du 22 mars 2026 — 838 communes de plus de 9&nbsp;000
+          habitants — Sources&nbsp;: résultats électoraux (Ministère de
+          l'Intérieur), prix immobiliers (DVF
+          <span id="dvf-year-label">2024</span>)
+        </p>
+        <nav class="tour-toggle" aria-label="Sélection du tour">
+          <button
+            type="button"
+            class="tour-btn"
+            id="btn-tour1"
+            aria-pressed="false"
+            title="Premier tour du 15 mars — résultats avant reports de voix"
+          >
+            1er tour — 15 mars
+          </button>
+          <button
+            type="button"
+            class="tour-btn active"
+            id="btn-tour2"
+            aria-pressed="true"
+            title="2ème tour du 22 mars — résultats définitifs après reports de voix"
+          >
+            2nd tour — 22 mars
+          </button>
+        </nav>
+      </header>
+
+      <div
+        role="tablist"
+        class="viz-tabs"
+        aria-label="Choisir une visualisation"
+      >
+        <button
+          type="button"
+          class="viz-tab active"
+          data-panel="scatter"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-scatter"
+          id="tab-scatter"
+        >
+          Prix &amp; abstention
+        </button>
+        <button
+          type="button"
+          class="viz-tab"
+          data-panel="boxplot"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-boxplot"
+          id="tab-boxplot"
+        >
+          Distribution par bloc
+        </button>
+        <button
+          type="button"
+          class="viz-tab"
+          data-panel="plm"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-plm"
+          id="tab-plm"
+        >
+          Paris-Lyon-Marseille
+        </button>
+      </div>
+
+      <p class="tab-blurb" id="tab-blurb"></p>
+
+      <div id="year-toggle-bar" style="margin-bottom: 8px">
+        <nav class="tour-toggle" aria-label="Année des données DVF">
+          <span
+            style="
+              font-size: 0.8rem;
+              color: #888;
+              align-self: center;
+              margin-right: 4px;
+            "
+            >Données DVF</span
+          >
+          <button
+            type="button"
+            class="tour-btn year-btn active"
+            data-year="2024"
+          >
+            2024
+          </button>
+          <button type="button" class="tour-btn year-btn" data-year="2025">
+            2025
+          </button>
+        </nav>
+      </div>
+
+      <div id="panels-wrapper" style="position: relative">
+        <div
+          id="panel-scatter"
+          class="tab-panel active"
+          role="tabpanel"
+          aria-labelledby="tab-scatter"
+        >
+          <div class="search-area">
+            <div class="search-wrapper">
+              <label for="commune-input" class="sr-only"
+                >Rechercher une commune</label
+              >
+              <input
+                type="search"
+                id="commune-input"
+                placeholder="Rechercher une commune... (ex : Paris ou Lyon)"
+                autocomplete="off"
+                spellcheck="false"
+                aria-autocomplete="list"
+                aria-controls="autocomplete-dropdown"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+              />
+              <div
+                id="autocomplete-dropdown"
+                role="listbox"
+                aria-label="Communes correspondantes"
+              ></div>
+            </div>
+            <div
+              id="pills-container"
+              role="list"
+              aria-label="Communes sélectionnées"
+              aria-live="polite"
+              aria-atomic="false"
+            ></div>
+          </div>
+          <!-- /.search-area -->
+
+          <div class="chart-wrapper">
+            <div
+              id="chart"
+              role="region"
+              aria-label="Nuage de points interactif : prix médian au m² (axe x, échelle log) vs taux d'abstention (axe y). Clique sur un point pour le sélectionner. Utilise la recherche ci-dessus pour filtrer par commune."
+            ></div>
+            <div
+              id="pinned-tooltip"
+              hidden
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            ></div>
+            <button
+              type="button"
+              id="reset-btn"
+              aria-label="Réinitialiser la sélection"
+              aria-hidden="true"
+              tabindex="-1"
+            >
+              ↺ Réinitialiser
+              <span style="opacity: 0.55; font-size: 0.8em">(ESC)</span>
+            </button>
+            <div
+              id="custom-legend"
+              role="group"
+              aria-label="Filtre par bloc politique"
+            >
+              <div class="legend-title" role="heading" aria-level="3">
+                Bloc politique
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /#panel-scatter -->
+
+        <div
+          id="panel-boxplot"
+          class="tab-panel"
+          role="tabpanel"
+          aria-labelledby="tab-boxplot"
+        >
+          <div id="boxplot" style="width: 100%; height: 560px"></div>
+        </div>
+
+        <div
+          id="panel-plm"
+          class="tab-panel"
+          role="tabpanel"
+          aria-labelledby="tab-plm"
+        >
+          <div
+            role="tablist"
+            class="viz-tabs plm-subtabs"
+            aria-label="Choisir une ville"
+            style="margin-top: 0"
+          >
+            <button
+              type="button"
+              class="viz-tab active"
+              data-plm="paris"
+              role="tab"
+              aria-selected="true"
+              aria-controls="plm-panel-paris"
+              id="plm-tab-paris"
+            >
+              Paris
+            </button>
+            <button
+              type="button"
+              class="viz-tab"
+              data-plm="lyon"
+              role="tab"
+              aria-selected="false"
+              aria-controls="plm-panel-lyon"
+              id="plm-tab-lyon"
+            >
+              Lyon
+            </button>
+            <button
+              type="button"
+              class="viz-tab"
+              data-plm="marseille"
+              role="tab"
+              aria-selected="false"
+              aria-controls="plm-panel-marseille"
+              id="plm-tab-marseille"
+            >
+              Marseille
+            </button>
+          </div>
+          <p class="tab-blurb" id="plm-blurb" style="margin-top: 12px"></p>
+
+          <div
+            id="plm-panel-paris"
+            class="tab-panel active"
+            role="tabpanel"
+            aria-labelledby="plm-tab-paris"
+          >
+            <div id="map-paris" class="plm-map"></div>
+          </div>
+          <div
+            id="plm-panel-lyon"
+            class="tab-panel"
+            role="tabpanel"
+            aria-labelledby="plm-tab-lyon"
+          >
+            <div id="map-lyon" class="plm-map"></div>
+          </div>
+          <div
+            id="plm-panel-marseille"
+            class="tab-panel"
+            role="tabpanel"
+            aria-labelledby="plm-tab-marseille"
+          >
+            <div id="map-marseille" class="plm-map"></div>
+          </div>
+        </div>
+        <!-- /#panel-plm -->
+
+        <div
+          id="tour1-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tour1-heading"
+        >
+          <div class="tour1-message">
+            <span class="tour1-icon" aria-hidden="true">🗓️</span>
+            <strong id="tour1-heading"
+              >Données du 1er tour en cours de préparation</strong
+            >
+            <p>
+              L'analyse du premier tour (15 mars 2026) sera disponible
+              prochainement.<br />En attendant, explorez les résultats du 2ème
+              tour.
+            </p>
+            <button type="button" class="tour1-back-btn" id="btn-back-tour2">
+              Voir le 2nd tour →
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /#panels-wrapper -->
+
+      <footer>
+        <p class="viz-footer">
+          Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
+          immobiliers (DVF <span id="dvf-year-footer">2024</span>, data.gouv.fr)
+          · Pour une meilleure expérience, consultes cette visualisation sur ton
+          ordinateur.
+        </p>
+        <p class="viz-footer">
+          En savoir plus : méthodologie, données sources, et notes
+          d'accessibilité - cliques
+          <a href="/projects/elections-municipales-2026/" style="color: #0066cc"
+            >ici</a
+          >
+          · Des questions ou retours ?
+          <a
+            href="https://linkedin.com/in/shahfazalmohammed"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            → LinkedIn
+          </a>
+        </p>
+      </footer>
+
+      <button
+        type="button"
+        id="tour-help-btn"
+        aria-label="Relancer le guide interactif"
+        title="Relancer le guide interactif"
+      >
+        ?
+      </button>
+    </div>
+    <!-- /.viz-content -->
+
+    <script src="./elections-municipales-2026.js"></script>
+  </body>
+</html>

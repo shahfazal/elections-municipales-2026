@@ -19,3 +19,6 @@ venv/
 
 # Jupyter
 .jupyter/
+
+.claude/
+notes/
