@@ -14,7 +14,7 @@ Chaque commune devient un point : axe x = prix médian au m² (échelle log), ax
 
 1. **Nuage de points** — prix médian au m² (x, échelle log) vs taux d'abstention (y), un point par commune, coloré par bloc gagnant. 838 communes de plus de 9 000 habitants, 2ème tour du 22 mars 2026.
 2. **Boîtes à moustaches** — distribution des prix au m² par bloc politique vainqueur. Les communes les plus chères votent-elles différemment ?
-3. **Carte Paris–Lyon–Marseille** — cartes par arrondissement croisant résultats du 2ème tour (couleur de fond) et prix médian au m² (taille des cercles). Transactions DVF 2024.
+3. **Carte Paris–Lyon–Marseille** — cartes par arrondissement croisant résultats du 2ème tour (couleur de fond) et prix médian au m² (taille des cercles). Données DVF 2024 et 2025, avec bascule entre les deux années.
 
 ## Schéma politique
 
@@ -31,11 +31,11 @@ Chaque commune devient un point : axe x = prix médian au m² (échelle log), ax
 
 ## Données
 
-| Source                   | Description                                                                |
-| ------------------------ | -------------------------------------------------------------------------- |
-| Ministère de l'Intérieur | Résultats du 2ème tour 2026 (`commune.parquet`)                            |
-| Ministère de l'Intérieur | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)         |
-| DVF 2024 (data.gouv.fr)  | Transactions résidentielles — prix médian au m² par commune/arrondissement |
+| Source                        | Description                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| Ministère de l'Intérieur      | Résultats du 2ème tour 2026 (`commune.parquet`)                                 |
+| Ministère de l'Intérieur      | Résultats BV pour Paris, Lyon, Marseille (`Paris_Lyon_BV.parquet`)              |
+| DVF 2024 + 2025 (data.gouv.fr) | Transactions résidentielles — un JSON par année, bascule dans la visualisation |
 
 ## Sources de données
 
@@ -45,19 +45,14 @@ Pour reproduire cette analyse, téléchargez les données suivantes :
 
 - **Source** : Ministère de l'Intérieur
 - **Élections** : Municipales 2026, 2ème tour (22 mars 2026)
-- **Lien** : [data.gouv.fr - Résultats des élections municipales 2026](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-second-tour)
-  _(Note: Vérifiez la page data.gouv.fr pour le lien exact — l'URL peut varier)_
+- **Lien** : [data.gouv.fr — Résultats des élections municipales 2026](https://www.data.gouv.fr/datasets/elections-municipales-2026-resultats-du-second-tour)
 
 ### Prix immobiliers (DVF)
 
 - **Source** : Direction générale des Finances publiques (DGFiP)
 - **Période** : 2024 et 2025
-- **Lien** : [data.gouv.fr - Demandes de valeurs foncières (DVF)](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/)
-- **Fichier utilisé** : `valeursfoncieres-2024.txt` et `valeursfoncieres-2025.txt` (format CSV)
-
-## Structure des données attendue
-
-Les notebooks s'attendent à trouver les fichiers dans un dossier `data/` à la racine :
+- **Lien** : [data.gouv.fr — Demandes de valeurs foncières (DVF)](https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/)
+- **Fichiers utilisés** : `valeursfoncieres-2024.txt` et `valeursfoncieres-2025.txt`
 
 ## Structure du dépôt
 
@@ -65,7 +60,7 @@ Les notebooks s'attendent à trouver les fichiers dans un dossier `data/` à la 
 /notebooks/          — notebooks d'analyse (self-contained, sorties vidées)
 /data/
     /raw/            — fichiers bruts (gitignorés)
-    /processed/      — JSON propre pour la viz (versionné)
+    /processed/      — JSON propres pour la viz (versionnés, un par année)
 /viz/                — HTML statique + Plotly.js
 ```
 
