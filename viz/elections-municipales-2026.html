@@ -62,6 +62,7 @@
          retain their default outlines so keyboard users can navigate them. */
       .viz-tab:focus,
       .tour-btn:focus,
+      .year-btn:focus,
       .tour1-back-btn:focus,
       #commune-input:focus,
       #reset-btn:focus,
@@ -73,6 +74,7 @@
       }
       .viz-tab:focus-visible,
       .tour-btn:focus-visible,
+      .year-btn:focus-visible,
       .tour1-back-btn:focus-visible,
       #commune-input:focus-visible,
       #reset-btn:focus-visible,
@@ -108,13 +110,13 @@
         background: #ffffff;
         max-width: 1400px;
         margin: 0 auto;
-        padding: 24px 32px 48px;
+        padding: 16px 32px 32px;
       }
 
       /* ── Header ──────────────────────────────────────────────────────────────── */
 
       .viz-header {
-        margin-bottom: 20px;
+        margin-bottom: 8px;
       }
 
       .viz-title {
@@ -128,7 +130,7 @@
       .viz-subtitle {
         font-size: 0.85rem;
         color: #666;
-        margin-bottom: 16px;
+        margin-bottom: 8px;
       }
 
       /* ── Viz tabs ────────────────────────────────────────────────────────────── */
@@ -273,6 +275,20 @@
         background: #1a1a1a;
         color: #fff;
         border-color: #1a1a1a;
+      }
+
+      #year-toggle-bar.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+        cursor: default;
+      }
+      #year-toggle-bar.disabled::after {
+        content: "Variations minimes à l'échelle des arrondissements";
+        display: block;
+        font-size: 0.75rem;
+        color: #999;
+        font-style: italic;
+        margin-top: 2px;
       }
 
       /* ── Search ──────────────────────────────────────────────────────────────── */
@@ -512,7 +528,8 @@
 
       /* ── Pinned tooltip ──────────────────────────────────────────────────────── */
 
-      #pinned-tooltip {
+      #pinned-tooltip,
+      .search-tooltip {
         position: absolute;
         background: #1a1a2e;
         color: #fff;
@@ -699,7 +716,8 @@
         <p class="viz-subtitle">
           2ème tour du 22 mars 2026 — 838 communes de plus de 9&nbsp;000
           habitants — Sources&nbsp;: résultats électoraux (Ministère de
-          l'Intérieur), prix immobiliers (DVF 2024)
+          l'Intérieur), prix immobiliers (DVF
+          <span id="dvf-year-label">2024</span>)
         </p>
         <nav class="tour-toggle" aria-label="Sélection du tour">
           <button
@@ -765,6 +783,30 @@
 
       <p class="tab-blurb" id="tab-blurb"></p>
 
+      <div id="year-toggle-bar" style="margin-bottom: 8px">
+        <nav class="tour-toggle" aria-label="Année des données DVF">
+          <span
+            style="
+              font-size: 0.8rem;
+              color: #888;
+              align-self: center;
+              margin-right: 4px;
+            "
+            >Données DVF</span
+          >
+          <button
+            type="button"
+            class="tour-btn year-btn active"
+            data-year="2024"
+          >
+            2024
+          </button>
+          <button type="button" class="tour-btn year-btn" data-year="2025">
+            2025
+          </button>
+        </nav>
+      </div>
+
       <div id="panels-wrapper" style="position: relative">
         <div
           id="panel-scatter"
@@ -802,6 +844,7 @@
               aria-atomic="false"
             ></div>
           </div>
+          <!-- /.search-area -->
 
           <div class="chart-wrapper">
             <div
@@ -950,18 +993,16 @@
       <footer>
         <p class="viz-footer">
           Sources : Résultats électoraux (Ministère de l'Intérieur, 2026) · Prix
-          immobiliers (DVF 2024, data.gouv.fr) · Pour une meilleure expérience,
-          consultes cette visualisation sur ton ordinateur.
+          immobiliers (DVF <span id="dvf-year-footer">2024</span>, data.gouv.fr)
+          · Pour une meilleure expérience, consultes cette visualisation sur ton
+          ordinateur.
         </p>
         <p class="viz-footer">
           En savoir plus : méthodologie, données sources, et notes
           d'accessibilité - cliques
-          <a
-            href="/projects/elections-municipales-2026/"
-            style="color: #0066cc"
+          <a href="/projects/elections-municipales-2026/" style="color: #0066cc"
+            >ici</a
           >
-            ici
-          </a>
           · Des questions ou retours ?
           <a
             href="https://linkedin.com/in/shahfazalmohammed"
@@ -1054,13 +1095,73 @@
       const searchedCommunes = new Set(); // multi-select from search bar
       const filteredBlocs = new Set(); // legend bloc filter (empty = no filter = all shown)
 
+      // ── Year toggle state ────────────────────────────────────────────────────────
+
+      let activeYear = "2024";
+      const scatterDataCache = {};
+
+      async function loadScatterData(year) {
+        if (scatterDataCache[year]) return scatterDataCache[year];
+        const resp = await fetch(DATA + `prix-logement-elections-${year}.json`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        scatterDataCache[year] = await resp.json();
+        return scatterDataCache[year];
+      }
+
+      async function switchYear(year) {
+        if (year === activeYear) return;
+        activeYear = year;
+
+        // Toggle button states
+        document.querySelectorAll(".year-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.year === year);
+        });
+
+        // Dynamic DVF year labels
+        document.getElementById("dvf-year-label").textContent = year;
+        document.getElementById("dvf-year-footer").textContent = year;
+
+        // Reload scatter data → rebuild traceData → re-render
+        const data = await loadScatterData(year);
+        BLOC_ORDER.forEach((b) => (traceData[b] = []));
+        data.forEach((d) => {
+          const b =
+            traceData[d.winning_bloc] !== undefined ? d.winning_bloc : "DIV";
+          traceData[b].push(d);
+        });
+        Plotly.react(CHART_ID, buildTraces(), buildLayout(), buildConfig());
+        // Re-apply active filters/selections so state carries across year switch
+        applySelection();
+        if (clickedCommune) {
+          const cd = findCustomdata(clickedCommune);
+          if (cd) showPinnedTooltip(cd);
+        } else if (searchedCommunes.size > 0) {
+          showSearchTooltips();
+        }
+
+        // Reset boxplot so it re-renders on next visit (or immediately if active)
+        boxplotReady = false;
+        if (
+          document.getElementById("panel-boxplot").classList.contains("active")
+        )
+          initBoxPlot();
+
+        // Tear down PLM maps — re-init with new year data on next visit
+        Object.keys(plmMaps).forEach((city) => {
+          plmMaps[city].remove();
+          delete plmMaps[city];
+          delete plmMapInited[city];
+        });
+        if (document.getElementById("panel-plm").classList.contains("active")) {
+          const activeCity =
+            document.querySelector("[data-plm].active")?.dataset.plm || "paris";
+          initPLMMap(activeCity);
+        }
+      }
+
       // ── Data fetch ──────────────────────────────────────────────────────────────
 
-      fetch(DATA + "prix-logement-elections.json")
-        .then((r) => {
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return r.json();
-        })
+      loadScatterData("2024")
         .then((data) => init(data))
         .catch((err) => {
           const p = document.createElement("p");
@@ -1183,7 +1284,7 @@
             range: [0, 75],
           },
           showlegend: false,
-          margin: { l: 60, r: 20, t: 20, b: 60 },
+          margin: { l: 60, r: 185, t: 20, b: 60 },
           hovermode: "closest",
           dragmode: false,
         };
@@ -1250,12 +1351,11 @@
           item.setAttribute("aria-pressed", "false");
 
           function toggleBloc() {
-            // Legend filter and point-click are mutually exclusive —
-            // clicking a legend item clears any pinned point first
-            if (clickedCommune !== null) {
-              clickedCommune = null;
-              hidePinnedTooltip();
-              Plotly.relayout(CHART_ID, { hovermode: "closest" });
+            // Block legend filter when a point or search pill is active —
+            // pulse reinit so user knows to reset first
+            if (clickedCommune !== null || searchedCommunes.size > 0) {
+              pulseResetBtn();
+              return;
             }
             if (filteredBlocs.has(bloc)) {
               filteredBlocs.delete(bloc);
@@ -1471,9 +1571,7 @@
         return { x: xPx, y: yPx };
       }
 
-      // pixelPos is optional — pass {x, y} computed from pt.xaxis.d2p + _offset for click events.
-      // Falls back to dataToPixel for search-triggered tooltips.
-      function showPinnedTooltip(cd, pixelPos) {
+      function positionTooltip(el, cd, pixelPos) {
         const TOOLTIP_W = 250;
         const TOOLTIP_H = 115;
         const OFFSET = 12;
@@ -1482,42 +1580,28 @@
         const chartW = chartEl.offsetWidth;
         const chartH = chartEl.offsetHeight;
         const mt = layout.margin.t || 0;
-
-        // Right boundary: subtract the legend panel width (170px) + its right gap (20px)
-        // from chartW. Avoids offsetLeft which is relative to chart-wrapper, not #chart.
         const RIGHT_BOUNDARY = chartW - 190;
 
         const { x: ptX, y: ptY } =
           pixelPos || dataToPixel(cd[CD.PRIX], cd[CD.ABSTENTION]);
 
-        // Default: immediately right of the point
         let left = ptX + OFFSET;
         let top = ptY - TOOLTIP_H - OFFSET;
-
-        // Mirror to immediately left of the point if tooltip would overflow into legend/edge
         if (left + TOOLTIP_W > RIGHT_BOUNDARY) left = ptX - TOOLTIP_W - OFFSET;
-        // Flip down if tooltip would clip above the chart
         if (top < mt) top = ptY + OFFSET;
-
-        // Hard clamp — catches any remaining edge cases (extreme axis points, small screens)
         left = Math.max(4, Math.min(left, chartW - TOOLTIP_W - 4));
         top = Math.max(4, Math.min(top, chartH - TOOLTIP_H - 4));
 
-        pinnedTooltip.style.left = `${left}px`;
-        pinnedTooltip.style.top = `${top}px`;
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+      }
 
-        // Unhide BEFORE updating content — aria-live only fires while the element
-        // is in the accessibility tree; setting hidden=true removes it.
-        pinnedTooltip.hidden = false;
-
-        // Clear and rebuild content with textContent — no innerHTML, no XSS
-        pinnedTooltip.replaceChildren();
-
+      function buildTooltipContent(el, cd) {
+        el.replaceChildren();
         const name = document.createElement("span");
         name.className = "tooltip-name";
         name.textContent = cd[CD.NOM];
-        pinnedTooltip.appendChild(name);
-
+        el.appendChild(name);
         [
           `Bloc : ${cd[CD.BLOC_LABEL]}`,
           `Prix médian : ${cd[CD.PRIX_FR]} €/m²`,
@@ -1527,12 +1611,41 @@
           const row = document.createElement("span");
           row.className = "tooltip-row";
           row.textContent = text;
-          pinnedTooltip.appendChild(row);
+          el.appendChild(row);
         });
+      }
+
+      // pixelPos optional — from click event; falls back to dataToPixel.
+      function showPinnedTooltip(cd, pixelPos) {
+        positionTooltip(pinnedTooltip, cd, pixelPos);
+        pinnedTooltip.hidden = false;
+        buildTooltipContent(pinnedTooltip, cd);
       }
 
       function hidePinnedTooltip() {
         pinnedTooltip.hidden = true;
+        clearSearchTooltips();
+      }
+
+      function clearSearchTooltips() {
+        document
+          .querySelectorAll(".search-tooltip")
+          .forEach((el) => el.remove());
+      }
+
+      // One pinned tooltip per searched commune. hovermode stays false — background dead.
+      function showSearchTooltips() {
+        clearSearchTooltips();
+        const chartWrapper = document.querySelector(".chart-wrapper");
+        searchedCommunes.forEach((name) => {
+          const cd = findCustomdata(name);
+          if (!cd) return;
+          const el = document.createElement("div");
+          el.className = "search-tooltip";
+          positionTooltip(el, cd);
+          buildTooltipContent(el, cd);
+          chartWrapper.appendChild(el);
+        });
       }
 
       function pulseResetBtn() {
@@ -1594,6 +1707,11 @@
         document
           .getElementById("btn-tour2")
           .addEventListener("click", () => setTour(2));
+        document
+          .querySelectorAll(".year-btn")
+          .forEach((btn) =>
+            btn.addEventListener("click", () => switchYear(btn.dataset.year)),
+          );
         document
           .getElementById("btn-back-tour2")
           .addEventListener("click", () => setTour(2));
@@ -1784,15 +1902,7 @@
           addPill(name);
           Plotly.relayout(CHART_ID, { hovermode: false });
           applySelection();
-
-          // Show pinned tooltip when a single commune is selected via search
-          // Multiple pills = no tooltip (ambiguous which point to anchor to)
-          if (searchedCommunes.size === 1) {
-            const cd = findCustomdata(name);
-            if (cd) showPinnedTooltip(cd);
-          } else {
-            hidePinnedTooltip();
-          }
+          showSearchTooltips();
 
           input.value = "";
           closeDropdown();
@@ -1817,16 +1927,11 @@
         btn.addEventListener("click", () => {
           searchedCommunes.delete(name);
           pill.remove();
-          if (searchedCommunes.size === 1) {
-            const remaining = [...searchedCommunes][0];
-            const cd = findCustomdata(remaining);
-            if (cd) showPinnedTooltip(cd);
-          } else {
-            hidePinnedTooltip();
-          }
-          // Restore hover when no pills remain
           if (searchedCommunes.size === 0) {
             Plotly.relayout(CHART_ID, { hovermode: "closest" });
+            clearSearchTooltips();
+          } else {
+            showSearchTooltips();
           }
           applySelection();
         });
@@ -1888,6 +1993,17 @@
               },
               onHighlightStarted: () => demoCommune("Montrouge"),
               onDeselected: () => resetAll(),
+            },
+            {
+              element: "#year-toggle-bar",
+              popover: {
+                title: "Données DVF — 2024 ou 2025 ?",
+                description:
+                  "Bascule entre les prix immobiliers DVF <b>2024</b> et <b>2025</b> pour vérifier si la corrélation tient dans les deux années.<br><br>" +
+                  "S'applique aux onglets <b>Prix &amp; abstention</b> et <b>Distribution par bloc</b> — filtres et sélections actifs sont conservés. Désactivé sur Paris-Lyon-Marseille (variations minimes à l'échelle des arrondissements).",
+                side: "bottom",
+                align: "start",
+              },
             },
             {
               element: ".viz-tabs",
@@ -2038,7 +2154,7 @@
                   "Chaque carte combine deux lectures :<ul style='margin:.5em 0 0 1.2em;line-height:1.7'>" +
                   "<li><b>Couleur de fond</b> : bloc politique vainqueur au 2ème tour.</li>" +
                   "<li><b>Taille du cercle</b> : prix médian au m² — plus le cercle est grand, plus l'arrondissement est cher.</li>" +
-                  "<li><b>Info-bulle</b> : prix, abstention, transactions DVF 2024.</li></ul>" +
+                  `<li><b>Info-bulle</b> : prix, abstention, transactions DVF ${activeYear}.</li></ul>` +
                   "<em>Survoles un arrondissement ou un cercle pour voir ses détails.</em>",
               },
             },
@@ -2218,6 +2334,9 @@
           );
         document.getElementById("tab-blurb").textContent =
           TAB_BLURBS[panel] || "";
+        document
+          .getElementById("year-toggle-bar")
+          .classList.toggle("disabled", panel === "plm");
         if (panel === "boxplot") initBoxPlot();
         if (panel === "plm") {
           // Wait for display:block before Leaflet can measure the container
@@ -2283,18 +2402,18 @@
 
       // ── PLM choropleth maps ───────────────────────────────────────────────────
 
-      let plmData = null;
+      const plmDataCache = {};
       const plmMaps = {};
       const plmMapInited = {};
 
       const PLM_DEPT = { paris: "75", lyon: "69", marseille: "13" };
 
       async function loadPLMData() {
-        if (plmData) return plmData;
-        const resp = await fetch(DATA + "plm-secteurs.json");
+        if (plmDataCache[activeYear]) return plmDataCache[activeYear];
+        const resp = await fetch(DATA + `plm-secteurs-${activeYear}.json`);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        plmData = await resp.json();
-        return plmData;
+        plmDataCache[activeYear] = await resp.json();
+        return plmDataCache[activeYear];
       }
 
       async function initPLMMap(city) {
