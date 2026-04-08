@@ -20,5 +20,7 @@ venv/
 # Jupyter
 .jupyter/
 
+# misc
 .claude/
 notes/
+*.sh
