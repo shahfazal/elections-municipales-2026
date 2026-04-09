@@ -13,7 +13,7 @@ Each commune becomes a dot: x = median price per m² (log scale), y = abstention
 
 ## Visualisations
 
-1. **Scatter plot**: median price per m² (x, log scale) vs abstention rate (y), one dot per commune, coloured by winning bloc. 838 communes with more than 9,000 inhabitants, 2nd round of 22 March 2026.
+1. **Scatter plot**: median price per m² (x, log scale) vs abstention rate (y), one dot per commune, coloured by winning bloc. 838 communes with DVF data available, 2nd round of 22 March 2026.
 2. **Box plot**: distribution of prices per m² by winning political bloc. Do the most expensive communes vote differently?
 3. **Paris–Lyon–Marseille choropleth**: arrondissement-level maps combining 2nd-round electoral results (fill colour) and median price per m² (circle size). DVF 2024 and 2025 data, with a year toggle in the viz.
 
@@ -61,7 +61,19 @@ Each commune becomes a dot: x = median price per m² (log scale), y = abstention
 - `03-transport-gtfs.ipynb`: GTFS exploration (stop density per commune, abandoned angle, not used in viz)
 - `04-plm-data.ipynb`: DVF and electoral results aggregated by secteur for Paris, Lyon, Marseille
 
-## Running the analysis
+## Running the viz locally
+
+```bash
+git clone https://github.com/shahfazal/elections-municipales-2026.git
+cd elections-municipales-2026
+python -m http.server 8080
+```
+
+Open `http://localhost:8080/viz/elections-municipales-2026.html`.
+
+`uv sync` is only needed if you want to run the notebooks.
+
+## Running the analysis (notebooks)
 
 ```bash
 # with uv (recommended)
@@ -77,7 +89,7 @@ jupyter notebook notebooks/
 
 Viz deployed at [shahfazal.com/elections-municipales-2026](https://shahfazal.com/elections-municipales-2026)
 
-Réutilisation submitted on data.gouv.fr
+Réutilisation published on data.gouv.fr: [Prix immobilier et résultats électoraux — Élections Municipales 2026](https://www.data.gouv.fr/reuses/prix-immobilier-et-resultats-electoraux-elections-municipales-2026)
 
 ---
 
