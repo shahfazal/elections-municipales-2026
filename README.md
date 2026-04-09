@@ -10,7 +10,7 @@ Les prix immobiliers influencent-ils le taux d'abstention et le bloc politique g
 
 ## Visualisations
 
-1. **Nuage de points** : Chaque commune devient un point, prix médian au m² (x, échelle log) vs taux d'abstention (y), un point par commune, coloré par bloc gagnant. 838 communes de plus de 9 000 habitants, 2ème tour du 22 mars 2026.
+1. **Nuage de points** : Chaque commune devient un point, prix médian au m² (x, échelle log) vs taux d'abstention (y), un point par commune, coloré par bloc gagnant. 838 communes avec données DVF disponibles, 2ème tour du 22 mars 2026.
 2. **Boîtes à moustaches** : distribution des prix au m² par bloc politique vainqueur. Les communes les plus chères votent-elles différemment ?
 3. **Carte Paris–Lyon–Marseille** : cartes par arrondissement croisant résultats du 2ème tour (couleur de fond) et prix médian au m² (taille des cercles). Données DVF 2024 et 2025, avec bascule entre les deux années.
 
