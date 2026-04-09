@@ -81,11 +81,23 @@ pip install pandas plotly jupyter pyarrow
 jupyter notebook notebooks/
 ```
 
+## Lancer la viz localement
+
+```bash
+git clone https://github.com/shahfazal/elections-municipales-2026.git
+cd elections-municipales-2026
+python -m http.server 8080
+```
+
+Ouvrir `http://localhost:8080/viz/elections-municipales-2026.html`.
+
+`uv sync` n'est nécessaire que pour relancer les notebooks.
+
 ## Résultats
 
 Viz déployée sur [shahfazal.com/elections-municipales-2026](https://shahfazal.com/elections-municipales-2026)
 
-Réutilisation soumise sur data.gouv.fr
+Réutilisation publiée sur data.gouv.fr : [Prix immobilier et résultats électoraux — Élections Municipales 2026](https://www.data.gouv.fr/reuses/prix-immobilier-et-resultats-electoraux-elections-municipales-2026)
 
 ---
 
