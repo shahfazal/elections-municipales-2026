@@ -10,7 +10,7 @@ Do property prices correlate with abstention rate and which political bloc won?
 
 Three visualisations built:
 
-1. **Scatter plot:** median prix/m² (x, log scale) vs abstention rate (y), one dot per commune, colour = winning bloc. 838 communes >9,000 inhabitants, 2nd round 22 March 2026.
+1. **Scatter plot:** median prix/m² (x, log scale) vs abstention rate (y), one dot per commune, colour = winning bloc. 838 communes with T2 results and DVF data available, 2nd round 22 March 2026.
 2. **Box plot:** prix/m² distribution by winning political bloc.
 3. **Paris–Lyon–Marseille choropleth:** arrondissement-level Leaflet maps, fill = winning bloc, circle size = median prix/m². DVF 2024 + 2025, one JSON per year, year toggle in viz.
 
@@ -33,7 +33,7 @@ Commune-level for scatter/boxplot. Arrondissement-level for PLM maps.
 
 ## Datasets used
 
-- `commune.parquet`: 2nd-round commune-level results (838 communes with >9,000 inhabitants)
+- `commune.parquet`: 2nd-round commune-level results (838 communes with DVF data — no explicit population filter; DVF coverage is the effective filter)
 - `Paris_Lyon_BV.parquet`: Bureau de Vote-level 2nd-round results for Paris, Lyon, Marseille.
 - `ValeursFoncieres-2024.txt` + `ValeursFoncieres-2025.txt`: DVF residential transactions (prix au m², one JSON per year)
 - `nuances.csv`: nuance code → political bloc mapping
